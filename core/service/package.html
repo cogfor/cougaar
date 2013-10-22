@@ -1,0 +1,18 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+primary core service APIs.
+<p>
+The general rule is to place service APIs in
+"org.cougaar.core.service" if they are used by many clients
+(e.g. the {@link org.cougaar.core.service.BlackboardService})
+or if the implementation is defined in an external module (e.g.
+the {@link org.cougaar.core.service.MessageTransportService}).
+<p>
+However, for legacy reasons, there are several exceptions to this
+rule that could be refactored, such as the commonly-used {@link
+org.cougaar.core.node.NodeControlService} and restricted
+{@link org.cougaar.core.service.DomainForBlackboardService}.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

@@ -1,0 +1,219 @@
+;!generate: org.cougaar.tools.build.MeasureWriter
+
+;
+; <copyright>
+;  
+;  Copyright 1997-2004 BBNT Solutions, LLC
+;  under sponsorship of the Defense Advanced Research Projects
+;  Agency (DARPA).
+; 
+;  You can redistribute this software and/or modify it under the
+;  terms of the Cougaar Open Source License as published on the
+;  Cougaar Open Source Website (www.cougaar.org).
+; 
+;  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+;  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+;  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+;  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+;  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+;  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+;  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+;  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+;  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+;  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+;  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;  
+; </copyright>
+;
+
+; Measures definition file used to generate java code.
+;  to convert to java:
+; javac MeasureWriter.java
+; java MeasureWriter measures.def
+;
+
+package=org.cougaar.planning.ldm.measure
+
+;[Angle]
+
+[Area]
+extends=Scalar
+internal=double
+base=square_meters
+baseabbrev=m^2
+units=square_meters square_feet square_yards acres hectares square_inches
+to_square_feet=10.76391
+to_square_yards=1.19599
+from_acres=4046.8564
+from_hectares=10000
+to_square_inches=1550.0031
+common=square_feet
+
+;[BoundedAngle]
+
+;[BoundedDouble]
+
+[Cost]
+internal=double
+baseabbrev=usd
+units=dollars
+
+[CostRate]
+derivative=Cost/Duration
+;common=dollars/day
+
+[Count]
+extends=Scalar
+internal=double
+base=units
+#baseabbrev=units
+units=units eaches dozen hundred gross million
+to_eaches=1.0
+from_dozen=12
+from_hundred=100
+from_gross=144
+from_million=1000000
+common=units
+
+[CountRate]
+derivative=Count/Duration
+
+[Distance]
+extends=Scalar
+; internal storage format - currently ignored (all are double)
+internal=double
+; unit to use as the "native" format.  If not specified, is the first
+; element in units line
+base=meters
+; abbreviation to use for the base unit.  eg. a Distance instance
+; will print as 42.3m
+baseabbrev=m
+; a list of all the units to support
+units=meters miles nautical_miles yards feet inches kilometers centimeters millimeters furlongs
+; conversion factors.  each unit from units (except for the base)
+; needs to have a to_ or a from_ line (or both).  The first line means
+; x meters = y miles * 1609.344
+from_miles=1609.344
+from_nautical_miles=1852.0
+from_yards=0.9414
+from_feet=0.3048
+from_inches=0.0254
+from_kilometers=1000.0
+; this means: x m * 100 = y cm 
+to_centimeters=100
+to_millimeters=1000
+from_furlongs=201.168
+common=meters
+
+[Speed]
+derivative=Distance/Duration
+common=miles/hour
+
+[Duration]
+extends=Scalar
+internal=double
+base=seconds
+baseabbrev=s
+units=seconds minutes hours days weeks milliseconds kiloseconds months years fortnights 
+from_minutes=60
+from_hours=3600
+from_days=86400
+from_weeks=604800
+to_milliseconds=1000
+from_kiloseconds=1000
+from_fortnights=1209600
+from_months=2629743.8
+from_years=31556926
+common=hours
+denominator_class=Rate
+
+[TimeRate]
+derivative=Duration/Duration
+common=hours/day
+
+;[Heading]
+
+;[Latitude]
+
+;[Longitude]
+
+[Mass]
+extends=Scalar
+internal=double
+base=grams
+baseabbrev=g
+units=grams kilograms ounces pounds tons short_tons long_tons
+to_ounces=0.035273962
+to_pounds=0.0022046226
+from_tons=907184.74
+from_short_tons=907184.74
+from_long_tons=1016046.9
+from_kilograms=1000
+common=short_tons
+
+[MassTransferRate]
+derivative=Mass/Duration
+common=pounds/second
+
+;[Temperature]
+
+[Volume]
+extends=Scalar
+internal=double
+base=liters
+baseabbrev=l
+units=liters ounces gallons imperial_gallons cubic_feet cubic_yards mtons cubic_centimeters cubic_meters barrels
+to_ounces=33.814023
+from_gallons=3.785412
+from_imperial_gallons=4.546090
+from_cubic_feet=28.316847
+from_cubic_yards=764.55486
+from_mtons=1132.67388
+to_cubic_centimeters=1000
+from_cubic_meters=1000
+from_barrels=158.98729
+common=gallons
+
+[FlowRate]
+derivative=Volume/Duration
+common=gallons/day
+
+[ElectricPotential]
+internal=double
+base=volts
+baseabbrev=v
+units=volts millivolts
+from_millivolts=1000
+
+[Power]
+internal=double
+base=watts
+baseabbrev=w
+units=watts kilowatts horsepower
+to_kilowatts=0.001
+to_horsepower=0.0013410221
+common=kilowatts
+
+; Rate is now a marker interface indicating that a measure is a
+; derivative measure with respect to time (Duration).
+[AbstractRate]
+deprecated=Use a real Rate Measure instead
+internal=double
+base=per_second
+baseabbrev=1/s
+units=per_second per_minute per_hour per_day per_week per_millisecond per_kilosecond
+to_per_minute=60
+to_per_hour=3600
+to_per_day=86400
+to_per_week=604800
+from_per_millisecond=1000
+to_per_kilosecond=1000
+common=per_hour
+
+[Energy]
+internal=double
+base=cal
+units=cal joule kcal
+to_joule=4.1868
+from_kcal=1000
+

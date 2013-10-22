@@ -1,0 +1,280 @@
+2003-12-11  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* deletion/SimpleDeletionPolicy.java:
+	A simple implementation of DeletionPolicy.
+
+	* deletion/DeletionSchedulePolicy.java:
+	New class to specify the scheduling of when the deletion plugin
+	runs. Allows the period and phase of the periodic scheduling plus
+	the specification of ad hoc, arbitrary times.
+
+	* deletion/DeletionPolicy.java:
+	New interface defining the API of deletion policies.
+
+	* deletion/DeletionPlugin.java:
+	New plugin class to perform periodic deletion of Deletable objects
+	on the blackboard.
+
+	* deletion/Deletable.java:
+	New interface defining the API for deletable blackboard objects.
+
+	* ServiceUserPlugin.java: 
+	* PluginAlarm.java:
+	Factored Alarm implementation out of ServiceUserPlugin so can be
+	used by DeletionPlugin.
+
+2003-04-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* freeze/Rules.java:
+	Bug #2771 -- Freeze rules cannot force non-plugins to freeze
+	A small class for holding freeze rules and applying them to a
+	prospective ThreadService consumer to determine whether the
+	consumer should be allowed to run or denied from running.
+
+	* freeze/FreezeTargetPlugin.java:
+	Bug #2771 -- Freeze rules cannot force non-plugins to freeze
+	Generalize rule implementation to include both deny and allow
+	rules and treat plugin parameters as a list of rules of the form:
+	{allow,deny} <classname>
+	An initial rule applied before any rules specified as plugin
+	params allows all freeze plugins to run.
+	A final rule applied after all rules specified as plugin params
+	denies running all plugins (extensions of PluginBase class).
+
+2003-03-21  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* freeze/FreezeTargetPlugin.java:
+	Synchronize checkStopped method to avoid
+	ConcurrentModificationException
+
+	* freeze/FreezeSourcePlugin.java:
+	Set the unfrozen agents list to all agents when starting a freeze
+	in case there are no agents. Otherwise, no response will be sent.
+
+	* freeze/FreezeSocietyPlugin.java:
+	Changes to support debugging Deletion. Added current execution
+	time display and a field for specifying the execution rate.
+
+2003-03-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* freeze/FreezeNodePlugin.java: 
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Remove now redundant check for
+	NodeControlService.getRootContainer() returning AgentContainer. It
+	is now defined to do so.
+
+2003-03-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* freeze/FreezeSocietyPlugin.java:
+	Bug #2659 -- Freeze plugins do not freeze time
+	Set time rate to 0.0 when everybody is frozen. Set it back to 1.0
+	when thawed.
+
+2003-03-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PluginManager.java: 
+	Bug #2658 -- Components incompatible with automatic service revocation feature
+	Test for null service before trying to use it.
+
+2002-08-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/AllocationResultHelper.java:
+	Bug #2102 -- concurrent mod exception in Univ Allocator during rehydration
+	This bug is more pervasive than just the Univ Allocator and could
+	occur in any plugin that calls Task.getPreferences() without
+	synchronizing the task first. The AllocationResultHelper is used
+	by several plugins (including the UniversalAllocatorPlugin) and
+	failed to synchronize the task.
+
+2002-08-13  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* freeze/readme.txt:
+	Bug #2019 -- society freeze capability
+	Description of how freeze works and how to use.
+
+	* freeze/FreezeTargetPlugin.java: 
+	* freeze/FreezeSourcePlugin.java: 
+	* freeze/FreezeSocietyPlugin.java: 
+	* freeze/FreezeRelayTarget.java: 
+	* freeze/FreezePlugin.java: 
+	* freeze/FreezeNodePlugin.java:
+	Bug #2019 -- society freeze capability
+	Plugins to propagate "freeze" from a servlet at NCA down to all
+	agents and response back up to the servlet. Uses new feature of
+	ThreadControlService to set a predicate that selects which threads
+	are allowed to run. The default predicate for freezing plugins is
+	any component extending PluginAdapter or ComponentPlugin except
+	for the three Freeze*Plugins. Parameters of FreezeTargetPlugin
+	name additional plugin classes that are allowed to run while
+	frozen. Note that most servlets are allowed to run since they are
+	not plugins or don't use the plugin thread.
+
+2002-07-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/AllocationResultHelper.java:
+	Fix Bug #1887 -- UniversalAllocator failing Consumable tasks at DLAHQ
+	Algorithm for computing success was incorrect.
+
+2002-07-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TestABA.java:
+	Test plugin for dynamic ABAs.
+
+2002-06-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ServiceUserPlugin.java:
+	Bug #1540 -- Message could be more explanatory on setValue exception
+	Use LoggingServiceWithPrefix for logging to identify the agent in
+	every log message.
+
+2002-05-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ServiceUserPlugin.java:
+	Remove debug.
+
+	* DefaultPluginBinder.java:
+	Change getPlugin to getComponent in toString() to eliminate
+	exceptions when the binder is not binding a plugin. For example,
+	when it binds a servlet component.
+
+2002-05-09  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimplifiedPlugin.java: 
+	* SimplifiedFatPlugin.java: 
+	* SimplePlugin.java: 
+	Bug 1232
+	Use closeTransactionDontReset
+
+	* PluginDelegate.java: 
+	Bug 1232
+	Define closeTransactionDontReset.
+	Deprecate closeTransaction(boolean);
+
+	* PluginAdapter.java: 
+	Bug 1232
+	Use closeTransactionDontReset
+
+2002-04-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ServiceUserPlugin.java:
+	Fix javadoc @link items -- they cannot be folder across multiple
+	lines.
+
+2002-04-10  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ServiceUserPlugin.java: Base class for plugins using services
+	that provided by other plugins. Supports waiting until all
+	services are available before running.
+
+	* ComponentPlugin.java:
+	Set thread name to plugin name when running the plugin.
+
+2002-03-21  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentPlugin.java:
+	Bug #1011 (CompenentPlugin invoked execute too often)
+	Only call execute() if wasAwakened() or
+	blackboard.haveCollectionsChanged(). This means that execute()
+	will be called only if a client or internal signal happened or if
+	an external signal was actually associated with a change to a
+	subscription of the plugin. This is the same behavior implemented
+	for SimplePlugin.
+
+2001-11-02  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Node.java (Repository):
+	Fix insertion point for agents.
+
+	* FileInitializerServiceProvider.java (Repository):
+	Fix interpretation of insertion point.
+
+	* DBInitializerServiceProvider.java (Repository):
+	Fix interpretation of insertion point.
+	Change DBProperties api.
+
+	* PluginManager.java (Repository):
+	Get insertion point by calling specifyContainmentPoint();
+
+2001-10-01  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
+
+	* PluginManager.java (Repository):
+	Use revised initializer interface for getting plugin descriptions.
+	(Repository): 
+
+2001-08-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PluginAdapter.java:
+	Implement suspend/resume to call the threadingModel
+	suspend/resume. Unregister interest in the subscription watcher.
+
+2001-08-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/PluginAdapter.java:
+	Modify suspend() and resume() for the SingleThread model to wait
+	for the thread to actually respond to the suspend or resume
+	request.
+
+2001-05-01  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/PluginHelper.java:
+	Update allocation results only when the change reports include a
+	PlanElementImpl.ReportedResultChangeReport instance. This should
+	be the only case in which it is necessary to update the estimated
+	result. A new method, checkChangeReports, checks a set of reports
+	for an instance of a given class. Used by the above, but available
+	for plugins to use, too.
+
+2001-04-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/AllocationResultHelper.java: Reuse newResult list instead
+	creating a new one for each change. This is a major memory hog and
+	reduces performance considerably.
+
+2001-04-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/PluginHelper.java:
+	Applies Bug #196
+	Use isEqual instead of == to compare allocation results. Reduces
+	extraneous plugin activation.
+
+	* util/AllocationResultHelper.java:
+	Applies Bug #196
+	Fix reconcialition of task preferences with phased results. The
+	preferences are not necessarily in the same order as the
+	allocation results.
+
+2001-04-03  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* util/PluginHelper.java:
+	Applies to Bug #196
+	Use AllocationResultHelper for createEstimatedAllocationResult.
+	That code is now in AllocationResultHelper.
+
+	* util/AllocationResultHelper.java:
+	Applies to Bug #196
+	New class supporting phased allocation results needed for the
+	correct handling of multi-day projections.
+
+1999-07-13  Ray Tomlinson  <rtomlinson@bbn.com>
+
+	* PluginAdapter
+	Provide default implementation of
+	SubscriptionClient.getSubscriptionClientName of the form:
+	<classname>[<params>]. This simplifies adapting plugins to changes
+	made for persistence.
+
+1999-02-10  Michael Thome  <mthome@bbn.com>
+
+	* EssentialPlugin 
+	Make various method protected and/or final.  Update subscription
+	methods to take/return Subscription instead of Collection.
+
+	* EssentialPluginTest
+ 	modernize
+	
+1999-05-11 Ben Levy <blevy@bbn.com>
+
+
+* SingleThreadedPlugin
+Added wake up method signatures based on ALP scenario time and system time.
+No implementations yet!!!!

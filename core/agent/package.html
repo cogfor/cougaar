@@ -1,0 +1,45 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+agent base class and bootstrapping components.
+<p>
+The top-level JVM {@link org.cougaar.core.node.Node} loads the
+{@link org.cougaar.core.agent.AgentManager}, which will contain all
+the agents on the JVM.  The AgentManager loads the configuration
+service ({@link org.cougaar.core.node.ComponentInitializerService})
+and the node agent {@link org.cougaar.core.agent.AgentImpl}, which is
+an agent named after the "-Dorg.cougaar.node.name" system property.
+Like all agents, the node agent's AgentImpl loads a single {@link
+org.cougaar.core.agent.Bootstrap} component that specifies
+the agent's initial component list.  The bootstrap loads the minimal
+number of components necessary to read the XML configuration file
+and/or persistence snapshot, which will fill in the full agent
+configuration.  The node agent's {@link
+org.cougaar.core.node.AgentLoader} then instructs the AgentManager
+to load the other agents that should run on the node.
+<p>
+Many of the components in this package are not required by the
+bootstrap but are used in the standard agent XML/XSL template
+($CIP/configs/common/SimpleAgent.xsl) to load basic services.
+For example, the {@link org.cougaar.core.agent.MessageSwitch}
+component is used to provide a common message transport service
+interface for components within the agent.
+<p>
+Also note that many of the components and services in this package
+act as "glue" to coordinate agent bootstrapping and mobility.
+For example, the {@link org.cougaar.core.agent.MessageSwitch}
+component is loaded early to allow other agent components to register
+{@link org.cougaar.core.agent.service.MessageSwitchService} handlers,
+such as the blackboard's {@link org.cougaar.core.agent.QueueHandler}.
+However, message delivery must wait until all components have
+loaded and had a chance to register their handlers, otherwise these
+early messages will be dropped.  The MessageSwitch advertises a
+"glue" {@link org.cougaar.core.agent.MessageSwitchUnpendService}
+with an "unpendMessages()" method that will release the queued
+messages.  A trivial {@link
+org.cougaar.core.agent.MessageSwitchUnpend} component is loaded
+late in the agent, after all the other components have been loaded,
+just to invoke the "unpendMessages()" method at the right time.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

@@ -1,0 +1,41 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+JVM node and node-level services.
+<p>
+The {@link org.cougaar.core.node.Node} contains the top-level<pre>
+  public static void main(String[] args) {..}
+</pre>
+that is typically loaded by the {@link
+org.cougaar.bootstrap.Bootstrapper}.
+<p>
+The node creates the root {@link
+org.cougaar.core.component.ServiceBroker} and {@link
+org.cougaar.core.agent.AgentContainer}.  Additional details can
+be found in the
+<a href="org/cougaar/core/agent/package-summary.html"
+  >agent package javadoc</a>.
+<p>
+This package also contains the {@link
+org.cougaar.core.node.ComponentInitializerService} provider
+components:
+<ol>
+  <li>
+  The standard XML-based configuration reader, which supports
+  XSL templates ({@link 
+  org.cougaar.core.node.XMLComponentInitializerServiceComponent}).
+  </li><li>
+  The deprecated INI-based configuration reader ({@link
+  org.cougaar.core.node.FileComponentInitializerServiceComponent}).
+  </li><li>
+  The deprecated database configuration reader ({@link
+  org.cougaar.core.node.DBComponentInitializerServiceComponent}).
+  </li>
+</ol>
+<p>
+Another notable component is the {@link
+org.cougaar.core.node.AgentLoader}, which loads the node's
+child agents.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

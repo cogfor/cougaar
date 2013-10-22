@@ -1,0 +1,28 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+publish/subscribe {@link org.cougaar.core.service.BlackboardService}.
+<p>
+The standard agent contains a {@link
+org.cougaar.core.blackboard.StandardBlackboard}
+component that provides the {@link
+org.cougaar.core.service.BlackboardService}, which is a wrapper
+around the {@link org.cougaar.core.blackboard.Subscriber}
+class.  The StandardBlackboard creates the {@link
+org.cougaar.core.blackboard.Distributor}, which
+manages the subscribers, and the special {@link
+org.cougaar.core.blackboard.Blackboard} subscriber
+to maintain a view of all blackboard objects and
+invoke {@link org.cougaar.core.domain.Domain} {@link
+org.cougaar.core.domain.LogicProvider}s.  Each subscriber has a set
+of {@link org.cougaar.core.blackboard.Subscription}s that are known
+only to that subscriber.  A subscriber registers with the distributor
+to receive blackboard add/change/remove notification "tuples".
+When a subscriber wishes to modify the blackboard contents,
+it must start a distributor transaction, fill an envelope with
+add/change/remove tuples, and finish the distributor transaction.
+The distributor also coordinates periodic persistence and ensures
+that blackboard updates are thread-safe.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

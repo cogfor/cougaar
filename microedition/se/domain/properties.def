@@ -1,0 +1,44 @@
+;!generate: org.cougaar.domain.planning.ldm.asset.PropertyWriter properties.def
+;; 
+;
+; <copyright>
+;  Copyright 1997-2000 Defense Advanced Research Projects
+;  Agency (DARPA) and ALPINE (a BBN Technologies (BBN) and
+;  Raytheon Systems Company (RSC) Consortium).
+;  This software to be used only in accordance with the
+;  COUGAAR licence agreement.
+; </copyright>
+;
+package=org.cougaar.microedition.se.domain
+
+[MicroAgentPG]
+doc=Characteristics of a Cougaar Micro Edition agent
+slots=String name, String capabilities, short port, String ipAddress
+name.doc=Name by which this agent is known
+capabilities.doc=Resources available to this Cougaar ME agent
+port.doc=Network port to be used to reach this Cougaar ME agent
+ipAddress.doc=Network address to be used to reach this Cougaar ME agent
+
+[RobotPG]
+doc=Characteristics of a Robot Asset
+slots=double latitude, double longitude, double velocity, double heading, double bearing, double scandir, boolean detection, boolean imageAvailable, boolean flashlightOn
+latitude.doc=Latitude, degrees North are positive
+longitude.doc=Longitude, degrees East are positive
+velocity.doc=Velocity, meters per second
+heading.doc=Heading, facing direction of Robot, degrees clockwise from Magnetic North
+bearing.doc=Bearing, bearing to target, deg CW from mag N, only valid if detection=true
+scandir.doc=Current hemisphere of scanning. Rel heading. 270=left, 90=right, 0=forward, -1=none
+detection.doc=Flag that indicates weather or not a target is detected
+imageAvailable.doc=Flag to indicate weather or not an image from the Robots camera is available
+flashlightOn.doc=Flag to indicate the status of the Robots flashlight
+
+[ImageAssetPG]
+doc=Characteristics of an Asset that provides an Image
+slots=String filename, long captureTime, byte[] data
+filename.doc=Initial Filename used for image
+captureTime.doc=Image creation time
+data.doc=binary image data
+
+[UGSPG]
+doc=Characteristics of an Asset for a UGS
+slots=String name, double lat, double lon, int len, int entries, String status, double[] bearing, double[] detTime

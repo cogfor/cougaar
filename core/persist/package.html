@@ -1,0 +1,25 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+persistence and rehydration support.
+<p>
+The primary client is the {@link 
+org.cougaar.core.blackboard.StandardBlackboard}, which uses
+persistence to periodically capture the agent's blackboard state,
+and rehydrate that state when the agent is restarted (either
+from a crash or mobility).
+<p>
+A modified {@link java.io.ObjectOutputStream} and {@link
+java.io.ObjectInputStream} is used to support persistence deltas,
+where references to unchanged objects are serialized instead of
+the full objects.  This requires Cougaar to override these
+JVM classes on the Java command line, by using:<pre>
+ -Xbootclasspath/p:$COUGAAR_INSTALL_PATH/    .... something ...
+</pre>
+<p>
+Additional {@link org.cougaar.core.persist.PersistenceService}
+clients include the agent's component model manager, which saves
+the agent's list of components in the persistence snapshot.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

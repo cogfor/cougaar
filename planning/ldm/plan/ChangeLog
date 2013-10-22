@@ -1,0 +1,444 @@
+2003-08-21  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationImpl.java:
+	Bug #3260 -- Method getAllocationTask missing from AllocationforCollections
+	Replace property descriptor for getAllocationTask with
+	getAllocationTaskUID. It is impossible to provide full
+	compatibility with former behavior.
+
+2003-06-27  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PlanElementImpl.java: 
+	* NewPlanElement.java:
+	Predictor reconciliation
+	Add "resetTask" method to change the task of a PlanElement.
+	Functionally like setTask, but allows for the planelement already
+	being attached to a task. It rewires the task and the plan element
+	accordingly.
+
+2003-05-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ContextOfOplanIds.java:
+	Make equals work correctly. This now just extends HashSet, which
+	provides the correct functionality with no effort.
+
+2003-04-25  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* WorkflowImpl.java:
+	Synchronize around writing of changedSubtasks. This only happens
+	during persistence when there are no other plugins running, so it
+	is probably not necessary, but it is logically correct.
+
+2003-04-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* WorkflowImpl.java: 
+	Bug #2598 -- ConcurrentModificationException in WorkflowImpl
+	Make changedSubtasks transient.
+
+2003-04-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PlanElementImpl.java:
+	Better message when publishAdd miswired PlanElement.
+
+	* ClusterObjectFactoryImpl.java: 
+	* ClusterObjectFactory.java: 
+	* AllocationImpl.java:
+	Changes to support revised AllocationforCollections API
+
+	* AllocationforCollections.java:
+	Change AllocationforCollections API to remember remote task UID
+	and deleted flag instead of the whole task.
+
+2003-04-01  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AspectScorePoint.java: 
+	Bug #2722 -- ScoringFunction implementations have missing/incorrect equals methods
+	AspectScorePoint also had no equals method. Sigh...
+
+	* ScoringFunction.java:
+	Bug #2722 -- ScoringFunction implementations have missing/incorrect equals methods
+	Added equals methods to PiecewiseLinearScoringFunction,
+	ConstantScoringFunction, StrictBetweenWithBest,
+	EnumeratedScoringFunction implementations.
+
+2003-03-31  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java:
+	Bug #2718 -- Subscriptions show unchanged tasks as "changed" after restart
+	Don't transmit Workflows to other agents. Aside from being
+	impossible, the rest of the fix for this bug won't work if the
+	SpecialWorkflow marker is transmitted. Workflows are serialized
+	only for persistence.
+
+2003-03-21  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskResponseImpl.java: 
+	* TaskResponse.java: 
+	* NewTaskResponse.java: 
+	* NewNotification.java: 
+	* NewDeletion.java: 
+	* DeletionImpl.java: 
+	* Deletion.java:
+	Bug #1096 -- Received tasks are deleted without deleting the remote Allocation
+	Factor the Deletion and Notification interfaces/classes into a
+	base interface/class (TaskResponse) and sub-interfaces/sub-classes.
+
+	* ClusterObjectFactoryImpl.java: 
+	* ClusterObjectFactory.java: 
+	Bug #1096 -- Received tasks are deleted without deleting the remote Allocation
+	Use Task.isDeleted when constructing TaskRescind directives, which
+	now have a deleted field, too. Also add another method for
+	constructing TaskRescind with an additional boolean giving the
+	deleted status of the directive.
+
+2003-03-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ScheduleImpl.java:
+	Bug #xxxx -- Log files intermix EOL conventions.
+	Use the platform line.separator to separate output lines to avoid
+	mixing conventions within the log files.
+
+2003-02-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* WorkflowImpl.java:
+	Bug #1954 -- Replace IllegalArgument exception with WARN message.
+	This is happening all the time.
+
+2003-02-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* WorkflowImpl.java: 
+	Bug #1954 -- RescindLP removes expansion subtasks still in workflow
+	Throw illegal argument exception if attempt to remove a subtask
+	that is not part of the workflow. This is the only way I see for
+	this bug to happen.
+	
+	* WorkflowImpl.java: 
+	Bug #1296 -- Removing subtasks from a workflow
+	The Workflow now manages the subtask result information. When a
+	new aggregated AllocationResult is computed, an associated set of
+	UIDs of subtasks contributing to the new result is updated. This
+	allows a plug to ask for a list of subtasks whose changed results
+	have caused the expansion result to change.
+	Also cleaned up a really messy synchronization pattern. Half the
+	code was synchronized on the workflow and the other half on the
+	subtask vector. Since the subtasks are the essence of the
+	workflow, it seems pointless to make the distinction. With these
+	changes, workflows should now maintain internal consistency
+	whereas before this was somewhat haphazard. The only known
+	loophole is the getTasks method that returns an Enumeration of the
+	subtasks Vector and cannot be protected from subsequent changes to
+	that Vector by, for example, a rescind. The javadoc warns of this
+	and suggests synchronization on the workflow while enumerating the
+	subtasks.
+
+	* Workflow.java:
+	Bug #1296 -- Removing subtasks from a workflow
+	Make getSubtaskResults an official part of the Workflow interface
+	instead of a kludge accessor in ExpansionImpl requiring a plugin
+	to cast the Expansion to ExpansionImpl.
+
+	* TaskScoreTable.java: 
+	Bug #1296 -- Removing subtasks from a workflow
+	Rationalize the interface so it can be updated directly instead of
+	constructing a new copy having the same data.
+
+	* SubtaskResults.java: 
+	Bug #1296 -- Removing subtasks from a workflow
+	New class holds and allocation result in addition to the list of
+	subtask information objects. This allows the state of the workflow
+	and subtasks to advance beyond the last aggregation of the subtask
+	results without introducing a disagreement between the subtasks
+	and the computed allocation result.
+
+	* NewExpansion.java: 
+	Bug #1296 -- Removing subtasks from a workflow
+	Change return type of getSubtaskResults to an extension of List
+	holding the allocation result aggregated from the subtasks held in
+	the list.
+
+	* ExpansionImpl.java:
+	Bug #1296 -- Removing subtasks from a workflow
+	Review of this code shows an accretion of various fixes and
+	patches to a number problems that have been found over time. Bug
+	#1296 reports a memory problem with expansions holding onto tasks
+	after they have been removed from the workflow. Variables
+	retaining this information have been removed from ExpansionImpl
+	and the responsibility for creating subtask info moved into
+	WorkFlowImpl.
+
+2003-01-23  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ScoringFunction.java:
+	VScoringFunction is incorrect between BEST and point2
+	Simplify and use inherent symmetry to compute score.
+
+2002-08-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AssetAssignmentImpl.java:
+	Bug #2203 -- asset transfer errros
+	Include the assignment kind (NEW, UPDATE, REPEAT) in toString to make
+	logging useful.
+
+2002-08-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java:
+	Bug #2102 -- concurrent mod exception in Univ Allocator during rehydration
+	Add a check in getPreferences for the caller having not
+	synchronized the task. If not synchronized, log a debug message
+	and return a BackedEnumeration instead of an ordinary Enumeration
+	backed by the preferences collection. Copying the collection is
+	expensive and should be avoided by synchronizing the task in the caller.
+
+2002-08-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationResult.java:
+	Bug 2104 -- Array index out of bound exception in AllocationResult
+	after rehydration
+	Add readObject and call clearMemos to properly initialize
+	transient variables.
+
+2002-08-20  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AspectRate.java:
+	Bug #2013 -- Universal Allocator sporadically failing at HNS
+	AspectRate.equals had parameter type of AspectRate rather than
+	Object so it did not match the signature of the equality
+	comparison used by the StrictValueScoringFunction. Instead the
+	base class (AspectValue) equals method was used comparing the type
+	and (double) value. A second bug wherein the setValue method did
+	not call super.setValue() caused the (double) value in AspectValue
+	to not be update resulting in inequality.
+
+2002-08-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java:
+	Bug #1901 -- Deadlock (?) in persistence
+	Allow for null prepositional phrase lists. Apparently there are some.
+
+2002-08-05  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java:
+	Bug #1901 -- Deadlock (?) in persistence
+	Apparently Tasks can have prepositional phrases that refer
+	(possibly indirectly) to other tasks having prepositional phrases
+	referring back to the first task. When such tasks are serialized
+	in multiple threads  (e.g. persistence and message transport), the
+	tasks may be encountered in opposite order. Because serialization
+	of an ArrayList synchronizes on the list, this constitutes a
+	deadlock with each thread holding one lock while waiting for the
+	other lock to be freed.
+	Fix by copying the ArrayList into an array and serializing that
+	instead. The ArrayList is reconstituted from the array during
+	deserialization.
+
+2002-07-23  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java: 
+	Bug #1760 -- publishRemove of subtask still in a workflow should fail
+	If debug is enabled, include a throwable in the log message to
+	identify the caller.
+
+2002-07-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TaskImpl.java:
+	Bug #1760 -- publishRemove of subtask still in a workflow should fail
+	It should be illegal to remove a subtask from the logplan while it
+	is still part of a workflow. Doing so leaves unpublished plan
+	elements dangling from the workflow. Perhaps, removal from the
+	workflow should be automatic. but that would be an API change.
+	Instead throw a runtime exception to catch these cases so they can
+	be fixed.
+
+2002-07-10  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ScoringFunction.java:
+	Bug #1568 -- Universal Allocator result aspects don't match
+	Supply aspect type when constructing AspectScorePoints. The
+	ConstantScoringFunction constructor provided no way to specify the
+	aspect type, so the constructors now have an additional aspect
+	type argument. ScoringFunctions with multiple AspectValue or
+	AspectScorePoint parameters do not check for homogeneity of aspect
+	types across all such parameters. Only the first such parameter is
+	used as the source for all constructed AspectValues and
+	AspectScorePoints. This is _not_ a feature; it's for the sake of
+	efficiency. Don't abuse it.
+
+	* AspectScorePoint.java:
+	Bug #1568 -- Universal Allocator result aspects don't match
+	Change constructor to require aspectType instead of setting to 0.
+	This is the source of the incorrect aspect types. All uses of the
+	bad constructor I found were in ScoringFunction.java.
+
+2002-02-25  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ScoringFunction.java:
+	Fix Bug 1101
+	Add equals methods to all ScoringFunction implementations.
+
+2001-11-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AssetVerificationImpl.java:
+	Include the schedule in the toString value to aid in debugging.
+
+	* AssignedRelationshipElementImpl.java:
+	Add toString method to reveal detail of the element to aid in
+	debugging.
+
+2001-08-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationResult.java:
+	Fix bug in constructor for merging two allocation results (e.g.
+	received + observed). The old code left nulls in the rollup result
+	array leading to NPE later.
+
+2001-07-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AggregationImpl.java
+	Bug #410
+	publishChange the task of an Aggregation that is removed as a side
+	effect of propagating the removal of another Aggregation. This
+	allows the task to be re-disposed.
+
+
+2001-07-16  Jim Winston  <jwinston@bbn.com>
+        * ScoringFunction.java:
+	Bug #406
+	Added public AspectValue getPoint() to SinglePointScoringFunction
+	Added public AspectValue getPoint1() and 
+	public AspectValue getPoint2() to TwoPointScoringFunction
+
+2001-07-16  Jim Winston  <jwinston@bbn.com>
+	* NewScheduleElement.java, ScheduleElementImpl.java:
+	Bug #335
+	Added setStartEndTimes(long starttime, long endtime).
+	Changed default starttime to TimeSpan.MIN_VALUE and
+	endtime to TimeSpan.MAX_VALUE
+	
+2001-05-01  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationResult.java:
+	Add nearlyEquals method to use AspectValues.nearlyEquals . See
+	comments on the latter regarding problematic equality comparison
+	of doubles.
+
+	* AspectValue.java:
+	Add nearlyEquals method using MoreMath.nearlyEquals to compare
+	AspectValues. See comments on the latter regarding problematic
+	equality comparison of doubles.
+
+2001-04-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationResult.java:
+	Bug #372
+	Use AspectValue.compare(AspectValue[], AspectValue[]) to compare
+	the aspect values of the result. Such arrays are really sets and
+	should be compared in an order-independent way.
+
+	* AspectValue.java:
+	Bug #372
+	Add method to compare two AspectValue[] that ignores differences
+	in the order of the values. Used by AllocationResult.isEqual to
+	correctly compute the equality of two AllocationResults.
+
+2001-04-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExpansionImpl.java:
+	Debugging support
+	Change toString to show the UID of the plan element.
+
+2001-04-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AspectValue.java:
+	Applies to Bug #196
+	Add method for cloning arrays of AspectValue. Used in several
+	places in pending changes in glm to avoid aliasing bugs.
+
+2001-04-04  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* AllocationResult.java:
+	Applies to Bug #248
+	Remove debugging code. This should cause the
+	IllegalArgumentException caused by an incorrect AspectValue for
+	the DEMANDRATE aspect to cease.
+
+2001-04-03  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TimeAspectValue.java:
+	Applies Bug #196
+	Fix toString() to assist in debugging phased allocation results.
+
+	* ScheduleImpl.java:
+	Applies to whatever the bug is about debugging output
+	Remove debugging println. Lines saying "ListIterator" should
+	cease.
+
+	* AssetAspectValue.java:
+	Applies to Bug #196
+	Add missing clone method used when constructing new phase4d
+	allocation results.
+
+	* AspectRate.java:
+	Applies to Bug #196
+	Add missing clone method used when constructing new phased
+	allocation results. Fix setValue method to actually set a new Rate
+	value for an existing AspectValue. Needed to support changing
+	phased allocation results.
+
+	* AspectLocation.java:
+	Applies to Bug #196
+	Add missing clone method used when constructing new phased
+	allocation results.
+
+	* AllocationResult.java:
+	Applies to Bug #196
+	Correct bugs in handling of phased results. Redundant data
+	structures removed since they were not correctly tracking each
+	other and were of dubious benefit. Added toString() to assist
+	debugging. Add clone().
+
+1999-03-01  Beth DePass <bdepass@bbn.com>
+  * ExtendedPenaltyImpl, PenaltyValueImpl, SinglePenaltyImpl, ClusterObjectFactoryImpl
+  Support for ExtendedPenalty which can be defined on PenaltyValue.
+  As Designed (for now) String and double.
+  
+1999-03-01  Beth DePass <bdepass@bbn.com>
+  * WorkflowImpl
+  Support for customizable PenaltyValueAggregators to be used in computing
+  the penaltyvalues across subtasks of a workflow.  Additional factory like
+  support for the penaltyvalueaggregators.  Implemenation of TaskPenaltyTable.
+
+1999-02-10  Beth DePass <bdepass@bbn.com>
+  * RoleScheduleImpl
+  Deprecate and add methods to conform to new PenaltyValue arrays.
+  
+1999-02-10  Beth DePass <bdepass@bbn.com>
+  * WorkflowImpl
+  Rework the compute penalty method to use the new PenaltyValue arrays.
+  
+1999-02-10  Beth DePass <bdepass@bbn.com>
+  * PenaltyValueImpl
+  Rework complete - penalty value is now a wrapper for penaltymeasure/value
+  pairs stored in an array. Code needs to be added for extensions. Inner
+  class enumerator included.
+  
+1999-02-05  Beth DePass <bdepass@bbn.com>
+  * PenaltyValueImpl
+  Start on rework to move to measure/value array. 
+
+1999-02-03  Beth DePass <bdepass@bbn.com>
+  * PlanElementImpl
+  Update doRoleSchedule method to conform to new RoleSchedule object
+  
+1999-02-03  Beth DePass <bdepass@bbn.com>
+  * RoleScheduleImpl
+  New... make RoleSchedule a first class object, instead of a container
+  inside of asset.
+  
+
+
+
+	
+	
+
+	
+	

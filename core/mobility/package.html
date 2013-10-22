@@ -1,0 +1,29 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+agent mobility support.
+<p>
+The mobility infrastructure is loaded into the node agent by the
+{@link org.cougaar.core.mobility.service.RootMobilityPlugin}, which
+requires the {@link org.cougaar.core.mobility.ldm.MobilityDomain}'s
+{@link org.cougaar.core.mobility.ldm.MobilityFactory}.  Agents
+register with the {@link org.cougaar.core.mobility.MobilityService}
+as {@link org.cougaar.core.mobility.MobilityClient}s
+to be told when they are moved, which requires them to
+suspend and capture their persistence state.  {@link
+org.cougaar.core.mobility.service.RootMobilityPlugin}s
+in the source and target nodes communicate through {@link
+org.cougaar.core.relay.Relay}s to transmit the agent and make sure
+it is started on the target node before being removed from the
+source node.
+<p>
+Plugins request agent mobility by interact with the {@link
+org.cougaar.core.mobility.service.RootMobilityPlugin} through
+blackboard {@link org.cougaar.core.mobility.ldm.AgentControl} objects
+that specify the requested {@link org.cougaar.core.mobility.Ticket}
+command, such as a {@link org.cougaar.core.mobility.MoveTicket}
+to move an agent.  Additional tickets exist for adding and removing
+agents.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

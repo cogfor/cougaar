@@ -1,0 +1,30 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+support for "relays", which are generic blackboard objects that
+transfer data between agents.
+<p>
+The {@link org.cougaar.core.relay.RelayLP} is included in the
+{@link org.cougaar.core.domain.RootDomain}, which is loaded by
+default.  The {@link org.cougaar.core.relay.Relay} API is divided
+into a sender-side {@link org.cougaar.core.relay.Relay.Source} and
+destination-side {@link org.cougaar.core.relay.Relay.Target},
+although most relay implementations implement both APIs.  A source
+specifies one or more target agents, the content, and a {@link
+org.cougaar.core.relay.Relay.TargetFactory} factory for creating
+the target-side representation of the relay.  Each target-side
+relay specifies an optional response to send back to the source.
+A relay with an {@link org.cougaar.multicast.AttributeBasedAddress}
+target will be sent to all members of the community and dynamically
+added/removed as community members are added/removed.
+<p>
+The relay API is complex to allow maximal flexability.  A simple
+example is included: {@link
+org.cougaar.core.relay.SimpleRelayExample} is a plugin that
+publishes a {@link org.cougaar.core.relay.SimpleRelay} to send
+a "ping" object to a target agent, and the target sends back
+an "echo-ping" acknowledgement.  See the {@link
+org.cougaar.core.relay.SimpleRelayExample} javadoc for details.
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

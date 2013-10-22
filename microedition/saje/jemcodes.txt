@@ -1,0 +1,152 @@
+# $Source: /opt/rep/cougaar/micro/micro/src/org/cougaar/microedition/saje/jemcodes.txt,v $ 
+# $Revision: 1.1 $ $Date: 2002-11-14 14:16:58 $ $Author: wwright $ 
+
+# This file defines some extended bytecode assignment used to access
+# raw JEM memory. Values are in decimal unless given with a leading 0
+# digit, in which case the value is hex.
+
+#
+# These names are arbitrary; we supply both the name and the opcode value.
+# These names can be referenced in the native replacements file.
+#
+#bpeek	= 015FF
+#cpeek	= 016FF
+#speek   = 017FF
+#ipeek	= 010FF
+#fpeek	= 012FF
+#lpeek	= 011FF
+#dpeek	= 013FF
+
+#bpoke	= 025FF
+#cpoke	= 026FF
+#spoke	= 027FF
+#ipoke	= 020FF
+#fpoke	= 022FF
+#lpoke	= 021FF
+#dpoke	= 023FF
+
+#
+# These names are built-in and do not need defining.
+# The value is also predefined. A new value may be assigned in this file.
+# (But we are giving the same value as in the JVM spec, so we are not
+# really changing anything.
+#
+#nop	= 0
+#aconst_null = 1
+#
+#invoke = 058FF
+# return_excpt = 053FF   areturnExcpt
+#2.4 retTrap = 052FF
+##returnIE = 051FF
+##retIE = 050FF
+#2.4 get_csa = 042FF
+#2.4 get_mark = 043FF
+#2.4 get_tcb = 041FF
+#2.4 get_vars = 044FF
+
+put_vars = 046FF
+
+#
+#wait = 073FF
+#notify = 074FF
+#notifyAll = 075FF
+#
+
+#suspend = 070FF
+#resume = 071FF
+#yield = 072FF
+#setPriority = 078FF
+#sleep = 079FF
+#
+
+#iblkcpy = 060FF
+##iblkfil = 062FF
+#cblkcpy = 064FF
+
+#2.4 wordalloc = 067FF
+##compatClasses = 066FF
+
+#interrupt = 076FF
+#stop = 07AFF
+#setCeiling = 077FF
+#bexch = 06CFF
+#wakeWaiters = 033FF
+
+
+get_mask = 082FF
+put_mask = 083FF
+
+# Update sleep queue
+
+usq      = 032FF
+
+
+# get_jcb
+get_jcb  = 040FF
+get_run  = 045FF
+get_mode = 06EFF
+
+# block copy routines for the Cirrus CS8900A Ethernet controller
+# (host memory <-> Controller memory)
+
+txBlkCpy = 0x5EFF
+rxBlkCpy = 0x5FFF
+
+# code to enable traps to executive mode -pjw
+swTrap25 = 0x030019CB
+switchVM = 0x86FF
+
+# generate trap 26 to executive mode -nmm 
+# These two lines added for cougaarme -- wwright
+swTrap26 = 0x03001ACB 
+halt = 0x69FF
+
+# ramtest opcode
+ramTest = 0x63FF
+
+# global time update
+getTime = 0x84FF
+
+# unsigned partial peek
+uppeek = 0x19FF
+
+# tst event generation
+tst_event = 0x6AFF
+
+# count leading zeros
+clz = 0x36FF
+
+# enable/disable int
+enable_int = 0x80FF
+disable_int = 0x81FF
+
+# Instructions to force a write operation in a way that will work
+# properly with hardware devices.
+
+poke.8  = 0x29FF
+poke.16 = 0x2AFF
+poke.32 = 0x2BFF
+poke.64 = 0x2CFF
+
+#
+# ucode graphics routines -- jkm 3/2/01
+#
+fillRect = 0x5CFF
+blitRect = 0x5DFF
+
+
+#
+# ucode gc routines -- Ram 4/26/01
+#
+gc_mark = 0x67FF
+gc_sweep = 0x68FF
+
+#
+# ucode processor version -- jmh 7/30/01
+#
+get_vsn = 0x6FFF
+
+#
+# StandBy mode -- mhm 8/28/01
+#
+standBy  = 0x85FF

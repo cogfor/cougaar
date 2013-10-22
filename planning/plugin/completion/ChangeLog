@@ -1,0 +1,307 @@
+2003-06-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleTimeAdvanceComponent.java:
+	Simple servlet to advance by a number of hours or days. Does not
+	wait for completion or anything complex.
+
+2003-06-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionSourcePlugin.java: 
+	Bug #3033 -- Completion Event recieved yet servlet HTML view shows agents incomplete
+	Give subclasses an opportunity to adjustLaggards before they are
+	processed. The CompletionNodePlugin uses this to insure that
+	agents that the NodeBusyService indicates are busy are also
+	laggards.
+	Also change getTargetNames() to be getTargets() returning the
+	MessageAddress of the agents. This change was pending anyway and
+	it greatly simplifies the use of the NodeBusyService, which
+	accepts the MessageAddress of an agent.
+
+	* CompletionSocietyPlugin.java: 
+	Bug #3033 -- Completion Event recieved yet servlet HTML view shows agents incomplete
+	Replace getTargetNames with getTargets().
+
+	* CompletionNodePlugin.java:
+	Bug #3033 -- Completion Event recieved yet servlet HTML view shows agents incomplete
+	Adjust the Laggards that have reported in to account for those
+	that have become busy (e.g. due to persistence). The Laggards for
+	such agents are changed to indicate that they are not complete.
+	Also add Laggards for any agents that are busy and missing from
+	the list.
+
+2003-03-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionCalculator.java:
+	Define methods for establishing a confidence threshhold above
+	which completion is "true.
+
+2003-03-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionNodePlugin.java: 
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Remove now redundant check for
+	NodeControlService.getRootContainer() returning AgentContainer. It
+	is now defined to do so.
+
+2003-03-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionSourcePlugin.java:
+	bug #2460 -- Timers sometimes fail to wake plugins with no subscriptions
+	Added TIMER_SLACK variable/parameter to specify time to allow for
+	plugin wakeup. Defaults to 10 seconds.
+	bug #2516 -- DEAD_NODE_TIMEOUT_KEY is missing an equal sign
+	Added equal sign.
+
+2003-02-11  Todd Wright  <twright@bbn.com>
+
+	* CompletionNodePlugin.java:
+	Replaced use of topology with NodeControlService list of
+	agents on the local node.
+
+	* CompletionSocietyPlugin.java: 
+	Replaced use of topology with WhitePagesService utility to
+	list all nodes.  This should be fixed to a scalable solution.
+
+	* CompletionSourcePlugin.java:
+        Removed use of TopologyReaderService
+
+2002-12-05  Todd Wright  <twright@bbn.com>
+
+        * *
+        Repackaged from occ.plugin.completion to ocp.plugin.completion.
+        Refactored out most of the planning-specific code.
+
+2002-09-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* HowTo.txt:
+	Add documentation of all plugin parameters.
+
+	* CompletionSourcePlugin.java:
+	Add TASK_COMPLETION_THRESHOLD=<long milliseconds> parameter.
+	Determine the fraction of tasks that must be completed for the
+	agent to have completed. Defaults to 0.99 (99%). 
+
+2002-08-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionTargetPlugin.java:
+	Bug #2083 -- Completion plugins should ignore tasks past the end of level 2 planning
+	Code tweak to avoid NPE trying to create tasksPredicate. The
+	predicate creation must be delayed until there is a ServiceBroker
+	available. Use lazy evaluation.
+
+2002-08-20  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionTargetPlugin.java:
+	Bug #2083 -- Completion plugins should ignore tasks past the end of level 2 planning
+	Expose the task selection predicate to subclasses for tailoring.
+	Provide a variable having the current scenario time.
+
+	* CompletionSocietyPlugin.java: 
+	* CompletionEventInsertion-recipe.sql:
+	Adjust timers slightly. Expose servlet settable time constants,
+	too.
+
+2002-08-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionInsertion-recipe.sql:
+	CSMART Recipe for normal completion plugin insertion.
+
+	* HowTo.txt:
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Document changes made for bug 2034. Describe recipe.
+
+	* CompletionEventInsertion-recipe.sql:
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Set INITIAL_TIME_ADVANCE_DELAY and NORMAL_TIME_ADVANCE_DELAY to
+	larger than default values.
+
+	* CompletionSocietyPlugin.java:
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Add servlet-settable parameters to the list of plugin parameters
+	so they can be initialized without the servlet.
+
+2002-08-15  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionEventInsertion-recipe.sql:
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	CSMART recipe for inserting completion plugins with parameters
+	suitable for running under stress and generating completion
+	events.
+
+	* CompletionTargetPlugin.java: 
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Make time constants settable through plugin parameters to
+	accomodate more leisurely updating of information required when
+	under stress.
+	Parameters are:
+	SLEEP_INTERVAL=<long> time between completion checks
+	ACTIVITY_DELAY=<long> time between checks for recent publish
+	activity
+
+	* CompletionSourcePlugin.java: 
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Make time constants settable through plugin parameters to
+	accomodate more leisurely updating of information required when
+	under stress.
+	UPDATE_INTERVAL=<long> sets interval between update cycles
+	LONG_CHECK_TARGETS_INTERVAL=<long> sets interval between checks of
+	topology to detect new nodes/agents after initialization.
+	SHORT_CHECK_TARGETS_INTERVAL=<long> sets interval between checks of
+	topology to detect new nodes/agents during initialization. Should
+	be shorter to be more responsive to expected changes.
+
+	* CompletionSocietyPlugin.java: 
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Generate CougaarEvent when completion is achieved and lost.
+	Make time constants settable through plugin parameters to
+	accomodate more leisurely updating of information required when
+	under stress.
+	Parameters (in addition to the parameters of
+	CompletionSourcePlugin) are:
+	DO_PERSISTENCE=false to suppress persistence snapshot on
+	completion.
+
+	* CompletionPlugin.java: 
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Add missing publishChange after changing relay when persisting.
+	Avoids waiting for next periodic update for propagating the
+	change.
+
+	* CompletionNodePlugin.java:
+	Bug #2034 -- Add CougaarEvent generation to CompletionPlugin
+	Respond instantly to new relays for more reliabl detection of the
+	worst laggard.
+	Make time constants settable through plugin parameters to
+	accomodate more leisurely updating of information required when
+	under stress. 
+
+2002-07-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionSourcePlugin.java: 
+	* CompletionRelay.java:
+	Bug #1786 -- Execution servlet doesn't
+	Update for using RelayChangeReports was incomplete. The new target
+	set was not being set so completion relays typically had no targets.
+
+2002-07-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionTargetPlugin.java:
+	Bug #1760 -- Task completion should be at 0.9 confidence level
+	confRating = Math.min(confRating / 0.899999, 1.0);
+
+2002-07-01  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionSourcePlugin.java:
+	Bug #1260 -- Add Relay target-set change support
+	Use support for changing target set to avoid creating new Relays.
+	Instead, just amend the target set.
+
+2002-06-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionTargetPlugin.java: 
+	* CompletionSourcePlugin.java: 
+	* CompletionSocietyPlugin.java: 
+	* CompletionNodePlugin.java:
+	Bug #1540 -- Message could be more explanatory on setValue exception
+	Remove cluster identifier from log messages since it is now
+	supplied by the logger.
+
+2002-06-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* HowTo.txt:
+	Instructions on using completion plugins and servlet.
+
+2002-06-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionSocietyPlugin.java:
+	Add automatic refresh option to servlet. When enabled, client pull
+	is turned on to periodically refresh the screen.
+
+2002-06-11  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Laggard.java:
+	Remove verb-counting code and storage.
+
+	* CompletionTargetPlugin.java: 
+	* CompletionSourcePlugin.java: 
+	* CompletionSocietyPlugin.java: 
+	* CompletionRelay.java: 
+	* CompletionPlugin.java: 
+	* CompletionNodePlugin.java:
+	Add final completion action to "persistNow" after advancement is
+	complete.
+
+2002-05-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CompletionTargetPlugin.java:
+	Remove GLM-specific specialization (verbs to ignore) and provide
+	interface whereby domain specializations can tailor the verbs to
+	ignore.
+
+	* CompletionSourcePlugin.java:
+	Don't start waiting for completion until the relay targets have
+	stabilized. This makes it easier for subclass CompletionActions to
+	work reliably by not trying to invoke such actions until all
+	agents and nodes are present and accounted for.
+
+	* CompletionSocietyPlugin.java:
+	Remove GLM-specific specializations and provide CompletionAction
+	interface for extensions to specialize behavior such as publishing
+	the oplan or sending GLS.
+
+	* TestPlugin.java:
+	A test plugin for debugging the completion determination. Provides
+	a daily set of supply tasks derived from projections to give
+	agents something to do as time passes.
+
+	* LaggardFilter.java:
+	Determines if a putative Laggard value is worth sending. Retains
+	the last Laggard that was judged worthy of sending and judges if a
+	new one should be sent depending on whether or not the change is
+	significant or if sufficient time has passed.
+
+	* Laggard.java:
+	A brief summary of the state of laggardliness of an agent
+	containing the cpuConsumption and taskCompletion values plus a
+	boolean indicating if the agent is really a laggard or not.
+
+	* CompletionTargetPlugin.java:
+	A plugin for sensing agent activity and sending the completion
+	status of the agent as responses to CompletionRelays. Both the
+	presence and status of activity are sensed. If any Task or
+	PlanElement is added, removed, or changed, the cpuConsumption
+	countdown is restarted. cpuConsumption decreases linearly in time
+	from 1.0 to 0.0 over a ten minute span. taskCompletion is computed
+	as the average of the confidence ratings of the estimated
+	allocation result of all tasks excluding certain tasks for which
+	plugins fail to provide reliable confidence ratings
+	(DetermineRequirements, getLogSupport and MaintainInventory).
+	Updated values are sent as responses as warranted. Care is taken
+	to limit the frequency of interesting, but insignificant changes.
+	In particular, it really only matters if the laggard thresholds
+	are crossed. Otherwise, the changes are not significant so updates
+	are scheduled over long intervals.
+
+	* CompletionSourcePlugin.java:
+	Base class for plugins that send relays (CompletionNodePlugin and
+	CompletionSocietyPlugin). Ascertains the correct set of targets,
+	fashions a CompletionRelay and sends it. Retrieves the relay
+	responses and dispatches them to subclass methods for handling.
+
+	* CompletionSocietyPlugin.java:
+	The root completion plugin. Gathers completion status from all
+	nodes and decides when to advance execution time.
+
+	* CompletionRelay.java:
+	A Relay to request task completion and cpu activity status from
+	nodes and agents.
+
+	* CompletionPlugin.java:
+	Base class provides some common services to subclasses
+
+	* CompletionNodePlugin.java:
+	A plugin for completion sensing in a NodeAgent. Identifies the
+	Agents of the Node and sends them a CompletionRelay so they can
+	report back the completion state. Subscribes to CompletionRelays
+	from higher levels and reports a completion state based on those
+	of the node's agents (least completed agent).

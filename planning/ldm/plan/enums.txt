@@ -1,0 +1,85 @@
+#!generate org.cougaar.util.EnumerationWriter
+;-*-Lisp-*-
+;
+; Generate Enum-like classes from the below definitions
+; 
+; Note - we use s-expressions instead of XML for esthetic reasons
+;
+
+(Agency
+ (values				; possible values
+  FORSCOM
+  CENTCOM
+  DLA
+  TRANSCOM
+  EUCOM
+  PACOM
+  COALITION
+  HOSTNATION
+  ACOM)
+ (base String)				; base type = String (default)
+ (complete false)			; allow use of constructor (default)
+ (unique true)				; intern strings, use hash table (default)
+ (documentation
+  "An enumeration of known valid military and civilian/idustrial agencies.
+An Agency is the highest-level meaningful organization description 
+associated with a lower-level organization.  
+Military Agencies are generally the CINC-level descriptions of
+affiliation. E.g. Usually \"USTC\" rather than \"TCJ6\".
+
+The implementation attempts to keep the number of duplicate Agency
+instances (e.g. that are .equals) to a minimum, but there are situations
+where this is not practical.  Use .equals instead of ==.")
+)
+
+
+(Service
+ (values
+  Civilian
+  Army
+  Navy
+  Airforce
+  Marine
+  Coastguard
+  Joint
+  Other)
+ (documentation
+  "An enumeration of known valid military (or otherwise) services.
+The implementation attempts to keep the number of duplicate service
+instances (e.g. that are .equals) to a minimum, but there are situations
+where this is not practical.  Use .equals instead of ==."
+  )
+)
+
+(Verb
+ (values
+  AccountForSupply
+  Arm
+  DetermineRequirements
+  Fuel
+  GetLogSupport
+  Maintain
+  Manage
+  ReportForDuty
+  ReportForService
+  Supply
+  SupplyStatusInquiry
+  SupportRequest
+  Transport
+  TransportAlert
+  TransportationMission
+  UserInput
+  Load
+  Unload
+  Transit
+  Idle
+  GenerateAEF
+  Inform
+  Execute
+  EstablishMissionRequirements
+  SupplyAircraft
+  PrepareForTransport
+  )
+ (documentation "Verb is the action part of a Task.")
+)
+  

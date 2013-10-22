@@ -1,0 +1,24 @@
+<body>
+This package contains the <a href="http://cougaar.org">Cougaar</a>
+"white pages" naming service.
+<p>
+The implementation is divided into:<ul>
+  <li>
+  {@link org.cougaar.core.wp.resolver}:<br>
+  The client-side naming cache, lease manager, and server-selection,
+  </li><p><li>
+  {@link org.cougaar.core.wp.server}:<br>
+  The servers, which can be replicated,
+  </li><p><li>
+  {@link org.cougaar.core.wp.bootstrap}:<br>
+  Shared bootstrap components for clients to discover servers (e.g.
+  cache the server address from either {@link
+  org.cougaar.core.wp.bootstrap.ConfigReader} config file or website)
+  and for servers to advertise their addresses (e.g. through an HTTP
+  {@link javax.servlet.Servlet}).
+  </li>
+</ul>
+<p>
+For more detail, see the
+<a href="http://cougaar.org/doc/11_4/online/CDG_11_4.pdf">Cougaar Developers' Guide</a>.
+</body>

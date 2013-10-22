@@ -1,0 +1,215 @@
+// -*- Java -*-
+/*
+ * <copyright>
+ *  
+ *  Copyright 1997-2004 BBNT Solutions, LLC
+ *  under sponsorship of the Defense Advanced Research Projects
+ *  Agency (DARPA).
+ * 
+ *  You can redistribute this software and/or modify it under the
+ *  terms of the Cougaar Open Source License as published on the
+ *  Cougaar Open Source Website (www.cougaar.org).
+ * 
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ * </copyright>
+ */
+
+package org.cougaar.planning.ldm.plan;
+
+import org.cougaar.core.util.UID;
+
+import java.util.*;
+
+/** Provides a table containing tasks (keys) and their AllocationResults
+ *
+ * This implementation is based on a fixed-size closed hash table.  Various 
+ * simplifications apply because nothing is added or removed after construction.
+ *
+ **/
+
+public class TaskScoreTable {
+  private Task[] tasks;
+  private AllocationResult[] results;
+  private int[] indexes = null;        // only for indexed arrays
+  private int size;
+  
+  private void setSize(int l) {
+    size=l;
+    tasks = new Task[l];
+    results = new AllocationResult[l];
+  }
+
+  public TaskScoreTable(Hashtable table) {
+    // initialize our arrays
+    int l = table.size();
+    setSize(l);
+    int i = 0;
+    for (Enumeration e = table.keys(); e.hasMoreElements(); i++) {
+      Task t = (Task) e.nextElement();
+      if (t != null) {
+        put(t, (AllocationResult) table.get(t));
+      }
+    }
+  }
+  
+  public TaskScoreTable(Task ntasks[], AllocationResult nresults[]) {
+    int l = ntasks.length;
+    size=l;
+    tasks = ntasks;
+    results = nresults;
+    indexes = new int[l];
+    for (int i=0; i<l; i++) {
+      indexes[i]=-1;
+    }
+    // index the tasks
+    for (int i=0; i<l; i++) {
+      indexTask(ntasks[i], i);
+    }
+  }
+
+  private final int indexTask(Task t, int ii) {
+    UID u = t.getUID();
+    int b = hash(u)%size;
+    int i = b;
+    do {
+      if (indexes[i]==-1) {
+        indexes[i]=ii;
+        return i;
+      }
+      i++;
+      if (i==size) i=0;
+    } while (i!=b);
+    return -1;
+  }
+      
+
+  private static final int BITS = 0x7fffffff;
+
+  private static final int hash(UID uid) {
+    return (uid.hashCode())&BITS;
+  }
+
+  private final int put(Task t, AllocationResult r) {
+    UID u = t.getUID();
+    int b = hash(u)%size;
+    if (indexes != null) 
+      b = indexes[b];
+    int i = b;
+    do {
+      Task x = tasks[i];
+      if (x == null) {
+        tasks[i] = t;
+        results[i] = r;
+        return i;
+      } else if (x.getUID().equals(u)) {      // match?
+        results[i] = r;
+        return i;
+      }
+      i++;
+      if (i == size) i=0;
+    } while (i!=b);
+    throw new RuntimeException("TaskScoreTable ran out of space!");
+  }
+
+  private final int find(UID u) {
+    if (indexes == null) {
+      // not indexed = use the direct case
+      int b = hash(u)%size;
+      int i = b;
+      do {
+        Task o = tasks[i];
+        if (o == null) return -1;
+        if (o.getUID().equals(u)) return i;
+        i++;
+        if (i == size) i=0;
+      } while (i!=b);
+      return -1;
+    } else {
+      // indexed - need to dereference through the index array
+      int b = hash(u)%size;
+      int i = b;
+      do {
+        int ii = indexes[i];
+        if (ii == -1) return -1;
+        Task o = tasks[ii];
+        if (o == null) return -1;
+        if (o.getUID().equals(u)) return i;
+        i++;
+        if (i == size) i=0;
+      } while (i!=b);
+      return -1;
+    }
+  }
+
+  private AllocationResult get(UID uid) {
+    int i = find(uid);
+    if (i == -1) return null;
+    return results[i];
+  }
+
+  /** @return AllocationResult The current allocation result associated 
+   * with the task
+   * @param task The task to use for the key 
+   **/
+
+  public AllocationResult getAllocationResult(Task task) {
+    return get(task.getUID());
+  }
+
+  public AllocationResult getAllocationResult(UID uid) {
+    return get(uid);
+  }
+
+  public void setAllocationResult(Task t, AllocationResult r) {
+    int i = find(t.getUID());
+    if (i == -1) {
+      put(t,r);
+    } else {
+      results[i] = r;
+    }
+  }
+
+  public void setAllocationResult(UID u, AllocationResult r) {
+    int i = find(u);
+    if (i == -1) {
+      throw new RuntimeException("setAllocationResult(UID,AllocationResult) can only update values, not add new task/result pairs");
+    } else {
+      results[i] = r;
+    }
+  }
+
+  // support for ExpansionImpl.
+  public void fillSubTaskResults(HashMap staskinfo, UID changedUID) {
+    if (staskinfo.isEmpty()) {
+      // need to fill it up
+      int l = size;
+      for (int i=0; i<l; i++) {
+        Task t = tasks[i];
+        AllocationResult r = results[i];
+        UID uid = t.getUID();
+        boolean changedp = uid.equals(changedUID);
+        SubTaskResult sr = new SubTaskResult(t, changedp, r);
+        staskinfo.put(uid, sr);
+      }
+    } else {
+      if (changedUID == null) return;
+      // just update the correct one
+      int i = find(changedUID);
+      if (i == -1) return;      // couldn't find it.  bail
+      Task t = tasks[i];
+      SubTaskResult sr = new SubTaskResult(t, true, results[i]);
+      staskinfo.put(changedUID, sr);
+    }
+  }
+}

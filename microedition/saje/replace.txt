@@ -1,0 +1,217 @@
+# $Source: /opt/rep/cougaar/micro/micro/src/org/cougaar/microedition/saje/replace.txt,v $ 
+# $Revision: 1.1 $ $Date: 2002-11-14 14:16:58 $ $Author: wwright $ 
+#
+# This file contains the assignments for the native methods in class rawJEM,
+# and elsewhere in the runtime system.
+# 
+com.ajile.jem.rawJEM.setIntMask(I)V     = put_mask
+com.ajile.jem.rawJEM.getIntMask()I      = get_mask
+
+# NOTE: The put_vars replacement may be temporary.
+#
+com.ajile.jem.rawJEM.putVARS(I)V = put_vars
+
+# Define the replacements for the get methods
+# 
+com.ajile.jem.rawJEM.getByte(I)B	= bpeek
+# ppeek for boolean???
+
+com.ajile.jem.rawJEM.getBoolean(I)Z = bpeek
+com.ajile.jem.rawJEM.getField(III)I = ppeek
+com.ajile.jem.rawJEM.unsignedGetField(III)I = uppeek
+com.ajile.jem.rawJEM.getChar(I)C = cpeek
+com.ajile.jem.rawJEM.getShort(I)S	= speek
+com.ajile.jem.rawJEM.getInt(I)I	= ipeek
+com.ajile.jem.rawJEM.getLong(I)J	= lpeek
+com.ajile.jem.rawJEM.getFloat(I)F	= fpeek
+com.ajile.jem.rawJEM.getDouble(I)D = dpeek
+# 
+# define the replacements for the set methods
+# 
+com.ajile.jem.rawJEM.set(IB)V	      = poke.8
+com.ajile.jem.rawJEM.setField(IIII)V  = ppoke
+com.ajile.jem.rawJEM.set(IZ)V	      = poke.8
+com.ajile.jem.rawJEM.set(IC)V	      = poke.16
+com.ajile.jem.rawJEM.set(IS)V	      = poke.16
+com.ajile.jem.rawJEM.set(II)V	      = poke.32
+com.ajile.jem.rawJEM.set(IJ)V	      = poke.64
+com.ajile.jem.rawJEM.set(IF)V	      = poke.32
+com.ajile.jem.rawJEM.set(ID)V	      = poke.64
+# 
+# define the replacements for the conversion methods
+# 
+com.ajile.jem.rawJEM.toClass(I)Ljava/lang/Class; = nop
+com.ajile.jem.rawJEM.toObject(I)Ljava/lang/Object; = nop
+com.ajile.jem.rawJEM.toByteArray(I)[B = nop
+com.ajile.jem.rawJEM.toCharArray(I)[C = nop
+com.ajile.jem.rawJEM.toIntArray(I)[I = nop
+com.ajile.jem.rawJEM.toInt(Ljava/lang/Object;)I	 = nop
+
+
+# The following additional fields are documented in the java source
+# code for the runtime system using %slink
+#grep %slink com/ajile/jem/*.java *.java
+
+#from com.ajile.jem.rawJEM.java
+com.ajile.jem.rawJEM.CompatibleClasses(II)Z = compatClasses
+com.ajile.jem.rawJEM.indirectInvokeOne(II)V = invoke
+com.ajile.jem.rawJEM.indirectInvokeOne(Ljava/lang/Object;II)V = invoke
+com.ajile.jem.rawJEM.removeFrame()V = removeFrame
+com.ajile.jem.rawJEM.returnToHandler(Ljava/lang/Throwable;I)V = areturnExcpt
+
+#com.ajile.jem.rawJEM.returnFromStackTrap()V = retTrap
+#com.ajile.jem.rawJEM.returnFromExecInterrupt()V = returnIE
+com.ajile.jem.rawJEM.getMARK()I   = get_mark
+com.ajile.jem.rawJEM.getTHREAD()I = get_tcb
+com.ajile.jem.rawJEM.getVARS()I   = get_vars
+com.ajile.jem.rawJEM.getCLASS()I   = get_csa
+com.ajile.jem.rawJEM.getRUNTIME()I   = get_run
+com.ajile.jem.rawJEM.iblkfil(III)V = iblkfil
+com.ajile.jem.rawJEM.iblkcpy(III)V = iblkcpy
+com.ajile.jem.rawJEM.iblkcmp(III)I = iblkcmp
+com.ajile.jem.rawJEM.cblkcpy(III)V = cblkcpy
+com.ajile.jem.rawJEM.cblkcmp(III)I = cblkcmp
+com.ajile.jem.rawJEM.txBlkCpy(III)V = txBlkCpy
+com.ajile.jem.rawJEM.rxBlkCpy(III)V = rxBlkCpy
+com.ajile.jem.rawJEM.monitorEnter()V = monitorenter
+com.ajile.jem.rawJEM.interruptEnable()V = ie
+com.ajile.jem.rawJEM.setCeiling(Ljava/lang/Object;I)V = setCeiling
+com.ajile.jem.rawJEM.byteExchange(IB)B = bexch
+com.ajile.jem.rawJEM.halt(I)V   = halt
+com.ajile.jem.rawJEM.JEM_stop(Ljava/lang/Thread;Ljava/lang/Object;)V = stop
+com.ajile.jem.rawJEM.JEM_resume(I)V = resume
+com.ajile.jem.rawJEM.JEM_setPriority(II)V = setPriority
+com.ajile.jem.JCB.getCurrentJCB()Lcom/ajile/jem/JCB; = get_jcb
+com.ajile.jem.rawJEM.getMODE()I = get_mode
+com.ajile.jem.rawJEM.countLeadingZeros(I)I = clz
+#
+#for better performance 
+#com.ajile.jem.rawJEM.assert(Z)V   = pop
+
+#from JEM_Thread.java
+java.lang.Thread.toThread(Ljava/lang/Thread;)Ljava/lang/Thread; = nop
+java.lang.Thread.toJEM_Thread(Ljava/lang/Thread;)Ljava/lang/Thread; = nop
+
+# Note, any native method which is patched and replaced has 2 entries.
+java.lang.Thread.currentThread()Ljava/lang/Thread; = get_tcb
+java.lang.JEM_Thread.currentThread()Ljava/lang/Thread; = get_tcb
+
+java.lang.Thread.yield()V = yield
+java.lang.JEM_Thread.yield()V = yield
+
+java.lang.JEM_Thread.JEM_sleep(J)V = sleep
+java.lang.JEM_Thread.JEM_setPriority(II)V = setPriority
+java.lang.JEM_Thread.JEM_suspend(Ljava/lang/Thread;)V = suspend
+java.lang.JEM_Thread.JEM_resume(I)V = resume
+#java.lang.JEM_Thread.JEM_stop(Ljava/lang/JEM_Thread;Ljava/lang/Object;)V = stop
+java.lang.JEM_Thread.JEM_interrupt(Ljava/lang/Thread;)V = interrupt
+com.ajile.jem.RTS_Thread.JEM_WakeWaiters(I)V = wakeWaiters
+
+java.lang.Thread.JEM_sleep(J)V = sleep
+java.lang.Thread.JEM_setPriority(II)V = setPriority
+java.lang.Thread.JEM_suspend(Ljava/lang/Thread;)V = suspend
+java.lang.Thread.JEM_resume(I)V = resume
+#java.lang.Thread.JEM_stop(Ljava/lang/JEM_Thread;Ljava/lang/Object;)V = stop
+java.lang.Thread.JEM_interrupt(Ljava/lang/Thread;)V = interrupt
+
+#from JEM_Object.java
+java.lang.JEM_Object.JEM_notify(Ljava/lang/JEM_Object;)V = notify
+java.lang.JEM_Object.JEM_notifyAll(Ljava/lang/JEM_Object;)V = notifyAll
+java.lang.JEM_Object.JEM_wait(Ljava/lang/JEM_Object;J)V = wait
+java.lang.Object.JEM_notify(Ljava/lang/Object;)V = notify
+java.lang.Object.JEM_notifyAll(Ljava/lang/Object;)V = notifyAll
+java.lang.Object.JEM_wait(Ljava/lang/Object;J)V = wait
+
+# from JEM_Class.java
+#java.lang.JEM_Class.toClass(Ljava/lang/JEM_Class;)Ljava/lang/Class; = nop
+java.lang.JEM_Class.toJEM_Class(Ljava/lang/Class;)Ljava/lang/JEM_Class; = nop
+java.lang.Class.toJEM_Class(Ljava/lang/Class;)Ljava/lang/Class; = nop
+
+#from JEM_Runtime.java
+java.lang.JEM_Runtime.toJEM_Thread(Ljava/lang/Thread;)Ljava/lang/JEM_Thread; = nop
+java.lang.Runtime.toJEM_Thread(Ljava/lang/Thread;)Ljava/lang/Thread; = nop
+
+java.lang.JEM_Throwable.toThrowable(Ljava/lang/JEM_Throwable;)Ljava/lang/Throwable; = nop
+java.lang.Throwable.toThrowable(Ljava/lang/Throwable;)Ljava/lang/Throwable; = nop
+
+java.lang.JEM_String.toJEM_String(Ljava/lang/String;)Ljava/lang/JEM_String; = nop
+java.lang.String.toJEM_String(Ljava/lang/String;)Ljava/lang/String; = nop
+java.lang.JEM_String.toString(Ljava/lang/JEM_String;)Ljava/lang/String; = nop
+java.lang.String.toString(Ljava/lang/String;)Ljava/lang/String; = nop
+
+#
+# Native method replacements for <clinit>'s
+#
+#java/lang/Class.getPrimitiveClass(Ljava/lang/String;)Ljava/lang/Class; = tonull
+com/ajile/lang/Double.longBitsToDouble(J)D = nop
+com/ajile/lang/Double.doubleToLongBits(D)J = nop
+com/ajile/lang/Float.floatToIntBits(F)I = nop
+com/ajile/lang/Float.intBitsToFloat(I)F = nop
+
+#The following is only temporary
+#java.lang.JEM_Class.isReflectionSupported()Z = iconst_0
+
+# currentTimeMillis() can be used (with a new setBaseMillis)
+#
+#java/lang/JEM_System.currentTimeMillis()J = lconst_1
+#java/lang/System.currentTimeMillis()J = lconst_1
+
+com/ajile/jem/JEM_Configuration.toJEM_Configuration(Lcom/ajile/jem/Configuration;)Lcom/ajile/jem/JEM_Configuration; = nop
+com/ajile/jem/Configuration.toJEM_Configuration(Lcom/ajile/jem/Configuration;)Lcom/ajile/jem/Configuration; = nop
+
+com/ajile/jem/JEM_JCB.toJEM_JCB(Lcom/ajile/jem/JCB;)Lcom/ajile/jem/JEM_JCB; = nop
+com/ajile/jem/JCB.toJEM_JCB(Lcom/ajile/jem/JCB;)Lcom/ajile/jem/JCB; = nop
+
+java/io/JEM_PrintStream.toJEM_PrintStream(Ljava/io/PrintStream;)Ljava/io/JEM_PrintStream; = nop
+java/io/PrintStream.toJEM_PrintStream(Ljava/io/PrintStream;)Ljava/io/PrintStream; = nop
+
+# for periodic threads
+com.ajile.jem.PeriodicThread.cycle()V = cycle
+
+
+# for sleep queue
+com.ajile.jem.RTS_Thread.JEM_updateSleepQ()V  = usq
+
+
+com.ajile.jem.RTS_Thread.toJCB(I)Lcom/ajile/jem/JCB; = nop
+
+# just for a test
+# Breakpoint.JEM_breakpoint()V = breakpoint
+
+# for the trap opcode
+com.ajile.jem.rawJEM.trap25()V = swTrap25
+com.ajile.jem.rawJEM.executiveSwitchVM(I)V = switchVM
+
+# These two lines added for cougaarme -- wwright
+org.cougaar.microedition.saje.Restart.trap26()V = swTrap26 
+org.cougaar.microedition.saje.Restart.halt(I)V = halt
+
+
+# for the ram test opcode
+com.ajile.jem.rawJEM.ramTest(IIII)I = ramTest
+
+# global time
+com.ajile.jem.rawJEM.getTime()J = getTime
+
+# tst event
+com.ajile.jem.rawJEM.tst_event(II)V = tst_event
+
+# enable/disable int
+com.ajile.jem.rawJEM.enableInt(I)V = enable_int
+com.ajile.jem.rawJEM.disableInt(I)V = disable_int
+
+# ucode graphics routines -- jkm 3/2/01
+com.ajile.jem.rawJEM.fillRect(IIIIII)V = fillRect
+com.ajile.jem.rawJEM.blitRect(IIIIII)V = blitRect
+
+
+#ucode gc routines - Ram 4/26/01
+com.ajile.jem.rawJEM.markObjectInList(II)Z = gc_mark
+com.ajile.jem.rawJEM.sweepObjectList(III)V = gc_sweep
+
+
+# ucode processor version -- jmh 7/30/01
+com.ajile.jem.rawJEM.getProcessorVersionInfo()I = get_vsn
+
+# StandBy -- mhm 8/28/01
+com.ajile.jem.rawJEM.standBy(I)V = standBy

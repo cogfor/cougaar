@@ -1,0 +1,422 @@
+2003-08-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* service/alarm/ExecutionTimer.java:
+	Bug #3265 -- first AlarmService.currentTimeMillis gets old time after a step
+	The getTime method has a crucial side-effect of stepping the
+	parameters to their new values if their switch time has been
+	passed. This side effect must occur before the "current"
+	parameters are fetched else the old parameters will used
+	erroneously.
+
+2003-07-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #3199 -- NodeAgent uses null logger for SimpleAgent logging
+	Create and use a static logger if a LoggingService cannot be obtained.
+	Bug #2966 -- persistence/security rehydration ordering issue
+	Bug #3038 -- Rehydration started before SecurityComponent
+	Bug #3141 -- Persistence component rehydration started before AgentIde...
+	Revise ordering to rehydrate persistence component before loading
+	high priority components only if rehydrating from a state object
+	and not from files. Then use the rehydrated component list for
+	loading all components. If rehydration must be done from files,
+	postpone the rehydration until highpriority components and the
+	AgentIdentityService have been loaded and the agent identity
+	acquired. In this case, use the rehydrated component list only for
+	internal and lower priority components.
+
+2003-04-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #2856 -- Components not loaded when agent is restarted in XML-configured society
+	Add info logging during rehydration from persistence data about component restoration.
+
+2003-04-24  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java: 
+	Bug #2838 -- Persistence lacks per-agent configurability
+	Pass all parameters PersistenceServiceComponent in case they
+	pertain thereto.
+
+2003-04-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #2743 -- Dots and other characters printed to System.err/out
+	interfere with logging
+	Use Logging.printDot instead of System.out.print showProgress.
+
+2003-03-21  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #2699 -- Time advance messages arrive before NaturalTimeService obtained
+	Move the MTS registration after other services are obtained.
+	
+
+2003-03-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java: 
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Give myBlackboardService protected state so it can be used by
+	subclasses (e.g. NodeAgent).
+
+	* AgentManager.java: 
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Add getComponents() method to retrieve a list of components
+	installed in this container.
+
+	* AgentContainer.java: 
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Add Collection methods so components other than agents can be
+	added/removed using this interface.
+
+2003-03-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Open up handling of persistence data to subclasses (NodeAgent).
+	Add getPersistenceClient method so subclasses can override and
+	substitute their own client.
+
+2003-03-13  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SimpleAgent.java:
+	Bug #1848 -- Need persistence of component hierarchy for mobile agents
+	Save agent component hierarchy in persistence snapshots.
+
+2003-03-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* service/event/EventServiceComponent.java: 
+	Bug #2658 -- Components incompatible with automatic service revocation feature
+	Test for null service before trying to use it.
+
+2002-11-07  Todd Wright  <twright@bbn.com>
+
+	* all
+	Fixed imports.
+
+2002-05-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* service/scheduler/SchedulerServiceProvider.java:
+	New default scheduler uses ThreadingService instead of real
+	threads.
+
+	* SimpleAgent.java:
+	Use new ThreadService for creating the SchedulerServiceProvider.
+
+2002-05-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* service/scheduler/SchedulerServiceProvider.java:
+	Use ThreadingService for new scheduler type that 
+	* SimpleAgent.java:
+	Add ThreadingServiceProvider. Use ThreadingService for
+	SchedulerService.
+
+2002-02-25  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ClusterImpl.java:
+	Fix bug 1100
+	Fix extraneous restart w.r.t. every newly discovered agent. Only
+	restart w.r.t. agents with changed incarnation numbers.
+
+2001-11-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Distributor.java:
+	Implement restartAgent method: calls the blackboard restartAgent
+	method and executes an empty transaction for the purpose of
+	initiating the transmission of the resulting messages.
+	Also, add the sending of messages to the Distributor log. This
+	helps relate the sending of messages to other Distributor
+	activity.
+
+	* DirectiveMessage.java:
+	Implement DirectiveWithChangeReports.toString by calling toString
+	of the wrapped Directive.
+
+	* ClusterImpl.java:
+	Add restart logic -- Initiate restart actions with all other
+	agents by resending tasks, asset transfers, etc. and by verifying
+	received tasks, assets, etc. Maintain set of agents with which we
+	have communicated (Directive messages sent or received).
+	Periodically test if agents that we have communicated with have
+	changed their incarnation number in the naming service. This
+	periodic test is a stopgap method for detecting agent restart.
+	Better would be direct notification from the message transport
+	that an agent restart has occurred.
+
+2001-10-01  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
+
+	* PublishException.java (Repository):
+	Javadoc
+
+2001-08-31  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Blackboard.java:
+	Add system property org.cougaar.core.persistence.sequence
+	used when org.cougaar.core.persistence.disableWrite is
+	true. It specifies the archive number to be used in rehydrating
+	the society. The form of the value is "_nnnnn" which is the suffix
+	on the sequence file to be used. When executing in really time, the
+	relevant suffix is the one on the sequence file having the date
+	desired. If running in non-real time. The correspondence must be
+	established manually.
+
+2001-08-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Distributor.java:
+	Work-around bug of persisted state containing recently deleted
+	objects by persisting, gc'ing, and persisting again. Also, pass
+	argument to persist specifying whether full or incremental
+	persistence is desired.
+
+2001-08-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ClusterImpl.java:
+	Fix MetricsHeartbeat and stop it when the cluster is unloaded.
+
+	* MessageManagerImpl.java:
+	Don't run the keep-alive sender if the message manager is not
+	being used.
+
+	* ClusterImpl.java:
+	Stop the QueueHandler thread when unloading.
+
+	* ClusterImpl.java:
+	Release all services acquired during load() in unload().
+
+2001-08-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ClusterImpl.java:
+	Replace StateTuple[] with AgentState having both the StateTuple[]
+	describing every child as well as the blackboard state. During
+	load(), the loadState is used for creating the blackboard as well
+	as all the children. The suspend (and resume) methods suspend (and
+	resume) the shared plugin service provider. This effectively
+	suspends (and resumes) all the plugins using the shared scheduler.
+
+	* SharedPluginManager.java:
+	Implement suspend and resume methods. Suspend sets a flag, signals
+	the thread to wake up and waits for the thread to die. The thread
+	examines the flag on each iteration and if set, exits. Resume
+	simply calls assureStarted which creates a new thread and starts
+	it running.
+
+	* SharedThreadingServiceProvider.java:
+	Pass through suspend and resume to the underlying shard plugin
+	manager.
+
+2001-08-13  Ray Tomlinson  <rtomlinson@bbn.com>
+
+	* Subscriber.java:
+	Add persistNow() method permitting a plugin to insure that
+	persistence has been performed prior to taking action. Used by the
+	DeletionPlugin to archive information that is about to be deleted.
+
+	* MessageManagerImpl.java:
+	Disable the advanceEpoch method when the message manager is not
+	being used. This allows the method to be called without regard to
+	whether the message manager is actually in use.
+
+	* Distributor.java:
+	Add "lazy persistence" that creates persistence deltas at a low
+	rate or upon request. This persistence information is not
+	synchronized with blackboards in other agents and so may require
+	reconciliation after restarts occur. Correct operation of these
+	feature awaits the availability of restart information from the
+	message transport services.
+	A method has been added to perform persistence on demand. This
+	feature is accessed through the BlackboardService.
+	A method has been added to perform persistence and return the
+	bytes of the persisted state as part of an object suitable for
+	return from getState().
+
+	* ClusterImpl.java:
+	Initialize persistence with a lazyPersistence flag. The checked in
+	code contains a debugging kludge that is innocuous if not used.
+
+	* Blackboard.java:
+	Add getState() method to support dynamic components. the state
+	object now consistes only of a PersistenceObject.
+
+2001-05-17  Ray Tomlinson  <rtomlinson@bbn.com>
+
+	* Blackboard.java:
+	Bug #411
+	Change default of org.cougaar.core.agent.enablePublishException
+	to false. This will suppress these exceptions which are largely
+	false positives.
+
+2001-04-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Distributor.java:
+	Debugging Support
+	Include received directives in the distributor log. This gives a
+	much clearer picture of what's happening.
+
+2001-04-03  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Whiteboard.java:
+	Convert changes to ALPPlan made in 7.2 into changes to this file.
+	Add a systemproperty
+	org.cougaar.core.agent.enablePublishException to enable the
+	generation of PublishExceptions. Defaults to true since such
+	exceptions may indicate a bug. May be set to false to ignore.
+
+	* Subscriber.java:
+	Applies to Bug #241
+	Fixes null pointer exception by checking for null and printing
+	something different. Null pointer exceptions during the printing
+	of PublishExceptions should cease.
+
+	* AddEnvelopeTuple.java:
+	Applies to Bug #181
+	Add null check when creating an add envelope event. Should help
+	catch this bug sooner. IllegalArgumentException should occur if
+	bad publishAdd is performed.
+
+	* ChangeEnvelopeTuple.java:
+	Applies to Bug #181
+	Add null check when creating an change envelope event. Should help
+	catch this bug sooner. IllegalArgumentException should occur if
+	bad publishChange is performed.
+
+	* RemoveEnvelopeTuple.java:
+	Applies to Bug #181
+	Add null check when creating an remove envelope event. Should help
+	catch this bug sooner. IllegalArgumentException should occur if
+	bad publishRemove is performed.
+
+	* BulkEnvelopeTuple.java:
+	Applies to Bug #181
+	Add null check when creating an bulk envelope event. Should help
+	catch this bug sooner. IllegalArgumentException should occur if
+	bad BulkEnvelopeTuple is created.
+
+1999-07-13  Ray Tomlinson  <rtomlinson@bbn.com>
+
+	* Added changes to support persistence:
+	* Subscriber
+	  Does not push outbox envelopes to Distributor.
+	  Saves inboxes of transactions.
+	* Distributor
+	  Pulls envelopes from Subscriber along with inboxes
+	  of uncompleted transactions.
+	  Envelopes are always distributed by the Distributor; no
+	  exceptions.
+	* SubscriptionClient
+	  Added getSubscriptionClientName so persisted inboxes can be
+	  matched up with the proper subscriptions.
+	* Envelope
+	  Make Serializable so they can be persisted.
+	  Remove originator. It's not needed and is hard to recreate
+	  during rehydration.
+
+1999-07-13  Beth DePass <bdepass@bbn.com>
+
+  * Subscriber add in execution monitoring - commitment date checks to
+  publishAdd and publishChange.
+
+1999-02-10  Michael Thome  <mthome@bbn.com>
+
+	* SubscriptionClient remove now unused wake() method from
+	interface. 
+
+	* Distributor, DistributorTest Move Distributor point test
+	code into its own file.
+
+1999-02-08  Michael Thome  <mthome@bbn.com>
+
+	* LogPlan, *LP, LogicProvider, etal. Unify the LogicProviders so
+	that "message" flavors of LPs are executed by the LogPlan rather 
+	than in the thread of the Cluster.  This simplifies the logic and
+	makes the LP code slightly faster.
+
+	* Subscriber, et.al. Subscribers now only wake up on subscription
+	activity or on explicit wake requests.
+
+1999-02-05  Michael Thome  <mthome@bbn.com>
+
+	* Subscriber Split wakeSubscriptionWatchers functionality into
+	three methods: 
+	  signalExternalActivity(); // distributer passed new info
+	  signalInternalActivity(); // plugin made changes to collections
+	  signalClientActivity();   // plugin asked to be (re)awakened
+	All callers updated to use the correct ones.
+
+1999-02-03  Beth DePass <bdepass@bbn.com>
+	* RescindLP
+	Remove rescinded Allocation and AssetTransfer PlanElements
+	from the respective Asset's RoleSchedule.
+  
+	* AssetTransferLp
+	Minor cleanup
+  
+	* ReceiveAssetLP
+	Move to using RoleSchedule object for available schedule setting.
+
+1999-02-03  Michael Thome  <mthome@bbn.com>
+
+	* Persistence*
+	New Subscriber, Envelope to support Persistence plugins.
+	Persistence rehydrations are quiet - that is, they do not modify
+	delta lists.
+
+	* Subscriber
+	Use Claimable interface (see org.cougaar.core.clusterobject.Claimable) to
+	"claim" objects by the Plugin which enters them into the logplan.
+
+	Lazy outbox creation.
+
+	Plugin-defined Envelope (outbox) class.
+
+	* RemoteClusterAllocationLP
+	Rewrite to correctly re-send messages from persisted PlanElements.
+
+	* ReceiveTaskLP
+	Stable behavior when receiving multiple copies of the same task.
+
+	* Various
+	use internal method to set the destination cluster of sent
+	messages to prevent complaints from new code to prevent
+	mis-directed messages.
+
+	Better toString()
+
+	* IncrementalSubscription
+	Reduce consing for users of deltas lists.  Only cons new lists
+	when the old lists were non-empty.
+
+	* EnvelopeParseLP
+	add isBulkEnvelopeTuple(Object)
+
+	* DummyCCAdapter
+	Proper transaction handling until the class is removed.
+
+1999-01-15  Michael Thome  <mthome@bbn.com>
+
+	* org.cougaar.core.agent.*
+	Merge Subscription with ContainerWrapper with the intent of making
+	Subscription the primary class. ContainerWrapper and subclasses
+	have been made into deprecated interfaces implemented by the new
+	classes.  The deprecated interfaces will be deleted early 1999.
+
+	subscribe() returns Subscription rather than Collection.
+
+	rename Subscription.getRealContainer() to be
+	Subscription.getContainer(), deprecating old name.
+
+	Revamp subscribe so that a Subscription may be passed as an
+	argument.  See Subscriber.Subscribe(Subscription) documentation
+	for details. This, in theory, allows plugins to write their own,
+	though it is a dangerous proposition right now... perhaps careful
+	finals would help.
+
+
+1999-05-11 Richard Lazarus
+
+* Added accessors to get, set, and advance ALP scenario time
+
+	
+
+
+	
+	

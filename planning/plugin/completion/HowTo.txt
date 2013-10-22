@@ -1,0 +1,202 @@
+How To Run the Completion Plugins
+
+The completion plugins comprise a set of sensors in all the agents
+that detect activity and plugins to aggregate the activity level back
+to a central point (NCA agent). Whenever a cessation of activity is
+detected the next activity action is taken. This continues until all
+activities are completed at which point all the agents are instructed
+to take a persistence snapshot. When that completes, the society can
+be shutdown and the persistence directories stashed away for later.
+
+The completion plugins are installed by CSMART recipes and configured
+by a servlet (NCA/completionControl). The servlet allows various
+timing parameters to be adjusted. The defaults offer a good starting
+point. Increasing the times reduces the chance of premature completion
+actions at the expense of slower operation. The parameters are
+summarized at the end of this note.
+
+The default configuration of the completion plugins are designed to
+work only in an unstressed environment. Running them under stress is
+pointless and will only cause grief. However, by changing timer
+settings, operation under higher levels of stress is possible. See the
+"Detecting Completion During Assessment" section below.
+
+Creating Persistence Snapshots
+
+Before starting, the persistence directories should be cleared. This
+can be done with shell commands or the set
+org.cougaar.core.persistence.clear system property=true.
+
+Once the society is running, bring up the completionControl servlet in
+the NCA agent and fill in the first number of time steps. For example,
+if you want create a snapshot for 8/30/2005 and the society comes up
+with a date of 8/10/2005, then enter 20 steps to take and click
+Submit. Click on Refresh from time-to-time to monitor progress.
+Experience will tell how long each day of advancement requires. After
+the last advancement step, every agent is instructed to take a final
+persistence snapshot. Currently, there is no feedback to indicate that
+this has completed so you will just have to wait and check the nodes
+the old-fashioned way.
+
+Once the final persistence snapshot has been taken, all the
+persistence directories on all the nodes should be tarred/zipped. Name
+the files meaningfully with the node and date or the reason for
+choosing the date. Zip/tarring the entire persistence directory is
+overkill since not every file is required, but the simple approach is
+recommended because it removes human error from the equation.
+
+The results from one run can serve as the starting point for another
+run to a later time. Indeed, a whole series of snapshots can be
+created in one extended session. For example, first advance 20 days to
+8/30/3005. Zip/tar the results. Advance another 10 days to 9/9/2005
+(using the servlet as before) without restarting the society. Advance
+again and so on. The zip/tar files for the later snapshots will be
+burdened with the data from the earlier ones. The old files could be
+removed, but again, that is error-prone and should be undertaken only
+if the excess time or disk space warrants it.
+
+For the interested, the files required to rehydrate an agent consist
+of a full snapshot and subsequent incremental snapshots. The end of
+each advancement run takes a full snapshot. In principal, this should
+be sufficient. For the FilePersistence media plugin (probably the only
+one we will be using), the full snapshot is accompanied by a numbered
+sequence file. For example, you might see the following:
+
+  -rw-rw-rw-   1 RTomlinson root   135671 Jun 10 16:10 delta_00000
+  -rw-rw-rw-   1 RTomlinson root   135986 Jun 10 16:13 delta_00002
+  -rw-rw-rw-   1 RTomlinson root     2012 Jun 10 16:18 delta_00003
+  -rw-rw-rw-   1 RTomlinson root        8 Jun 10 16:18 sequence
+  -rw-rw-rw-   1 RTomlinson root        8 Jun 10 16:10 sequence_00000
+  -rw-rw-rw-   1 RTomlinson root        8 Jun 10 16:13 sequence_00002
+
+sequence_00000 and delta_00000 go together and represent a full
+snapshot taken early in the run. sequence_00002 and delta_00002 also
+go together and represent a second full snapshot taken three minutes
+later (at the end of the test run). delta_00003 is an incremental
+snapshot taken after the run completed, but before the agent was
+actually shutdown. The unnumbered sequence file identifies delta_00002
+and delta_00003 as constituting the most recent rehydration set and
+would be the default to use for rehydration.
+
+Note that delta_00001 is not present. It was deleted after the full
+snapshot in delta_00002 was created making the incremental snapshot
+superfluous.
+
+Rehydrating a Saved Session
+
+The procedure above creates a zip/tar file for every node or host for
+every saved session. To run a saved session, the standard persistence
+directories must be cleared and the relevant zip/tar files unpacked
+into them. Then the society can be started (without any of the
+completion plugins) and subjected to unimaginable torture.
+
+Servlet Parameters
+
+Scenario Time -- the scenario time when the servlet was last update.
+Click the Refresh button to get an updated value.
+
+Initial Time Advance Delay -- Some plugins delay before processing
+their first set of inputs for efficiency reasons. These delays are
+indistinguishable from ordinary quiescence and could cause premature
+time advancement.
+
+Normal Time Advance Delay -- This is similar to the above except the
+plugins are not intentionally delaying, but are simply encountering
+ordinary competition for CPU.
+
+Advance Time Delay -- The delay after a time advance before another
+time advance is allowed. This must at least cover the builtin delay
+for time advancement (ten seconds) plus the time it takes for an agent
+to notice and report that it is again busy.
+
+Advance Time Step -- How many milliseconds to step ahead. One day is
+the default. 12 hours is another reasonable value.
+
+Number of Time Steps to Advance -- This is counted down for each
+advancement step taken until it reaches zero. If the Advance Time Step
+is 86400000, then this is the number of days of advancement to
+perform. Clicking the Refresh button will bring this up-to-date.
+
+Submit -- Clicking this button posts the new values to the servlet and
+changes the operation of the CompletionSocietyPlugin.
+
+Refresh -- Simply reloads the page. Nothing is posted.
+
+Detecting Completion During Assessment
+
+The completion plugins may be used in situations where the goal is not
+to advance time, but is to merely detect the completion of the
+planning activity. In this case, it is necessary to use less
+aggressive timing parameters so that the completion detection does not
+contribute to the overall message and cpu load and to avoid premature
+completion detect when under stress.
+
+The completion plugins detect the completion or lack of completion at
+every agent and feed that information back to a central agent (NCA).
+The detection and feedback process can be significantly delayed in the
+face of various kinds of stress. It is important that premature
+decisions not be made since it is possible for information that would
+change the decision to still be in transit or not even detected, yet.
+
+The parameters responsible for avoiding premature completion detects
+are INITIAL_TIME_ADVANCE_DELAY and NORMAL_TIME_ADVANCE_DELAY. These
+correspond to the servlet settable parameters with similar names
+above. The former is used on the very first time advance and the
+latter is used all subsequent time advances. Values should be chosen
+long enough to allow decisions in the agents to be made and the
+information propagated back to NCA. The Completion Event Insertion
+recipe sets these parameters to 180000 and 120000 milliseconds
+respectively.
+
+The other important parameter is the UPDATE_INTERVAL. UPDATE_INTERVAL
+determines the time between completion computations. The Completion
+Event Insertion recipe sets this time for both the node and agent
+plugins to 30 seconds.
+
+Plugin Parameters
+
+CompletionSocietyPlugin
+
+ADVANCE_TIME_ADVANCE_DELAY (20000) -- the delay after a time advance
+before another advance can occur. Allows time for the time advance to
+propagate to all agents and for the agents to beginning replanning.
+
+NORMAL_TIME_ADVANCE_DELAY (5000) -- The delay after all agents and
+nodes have reported completion that must elapse before time is
+actually advanced. Allows some time for late reports of non-completion
+to arrive.
+
+INITIAL_TIME_ADVANCE_DELAY (150000) -- The delay after startup before
+the first time advance is allowed. Like NORMAL_TIME_ADVANCE_DELAY, but
+applies before the first time advance. Additional delay is needed to
+allow for interference from initialization activity in reporting
+non-completion.
+
+DO_PERSISTENCE (true) -- Controls whether a persistence snapshot is
+taken after all days have been advanced.
+
+CompletionSocietyPlugin and CompletionNodePlugin
+
+TASK_COMPLETION_THRESHOLD (0.99) -- The fraction of tasks that must be
+completed in every agent before the agent is considered to have
+completed. 1.0 means all tasks must have completed.
+
+UPDATE_INTERVAL (5000) -- The interval between checks for new status
+from other agents (node plugin) or nodes (society plugin).
+
+LONG_CHECK_TARGETS_INTERVAL (120000) -- Interval between checks for
+new agents or nodes after initialization is completed.
+
+SHORT_CHECK_TARGETS_INTERVAL (15000) -- Interval between checks for
+new agents or nodes during initialization. Once a number of suche
+intervals have elapsed with no new agents, the
+LONG_CHECK_TARGETS_INTERVAL is used (until an new agent or node is
+discovered).
+
+CompletionTargetPlugin
+
+SLEEP_INTERVAL (5000) -- Interval between wakeups to check for a
+change in status.
+
+ACTIVITY_DELAY (60000) -- Originally this was the period of inactivity required before completion was deemed to have occurred. Now this value is used in conjunction with cpu threshold of 95% to determine that interval. So, the actual cpu inactivity required is 5% of this value or 30000 milliseconds by default.
+

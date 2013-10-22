@@ -1,0 +1,51 @@
+- - - - - List of machine generated PropertyGroups - - - - -
+* ClusterPG
+An asset that is represented by a COUGAAR Agent
+    org.cougaar.core.mts.MessageAddress MessageAddress;	//The MessageAddress for addressing this asset.
+    Predictor Predictor;	//Predictor (if any) for the Agent
+* CommunityPG
+    Collection<String> Communities;	//Collection of community names to which the asset belongs at the specified time.
+* EntityPG
+    Collection<Role> Roles;	//Collection of Roles the organization is capable of fulfilling.
+* ItemIdentificationPG
+Identification of a unique, actual Asset, e.g. by VIN, SSN, etc.
+    String ItemIdentification;	//A String of the form "<type>/<id>", e.g. "SN/105G13F7YM0G"
+    String Nomenclature;	//A String describing the Asset in human-readable form.
+    String AlternateItemIdentification;	// Not to be used as MessageAddress.  Use ClusterPG.getMessageAddress() instead.
+* LocationSchedulePG
+    Schedule Schedule;	//A schedule of LocationScheduleElement elements.  The semantics of location and overlapping time ranges is not defined. Consumers of the schedule should probably synchronize on the schedule object in order to prevent comodification exceptions.
+* RelationshipPG
+    org.cougaar.planning.ldm.plan.RelationshipSchedule RelationshipSchedule;	//a schedule of relationships for this asset.
+    boolean Local;
+* TypeIdentificationPG
+Identification of a type of Asset, e.g. by NSN, part number, etc.
+    String TypeIdentification;	//A String of the form "<type>/<id>", e.g. "NSN/0913801298439"
+    String Nomenclature;	//A human-readable description of this type.
+    String AlternateTypeIdentification;	//examples: "LIN/T13168", "DODIC/C786"
+* global
+- - - - - Permuted index of PropertyGroupSlots - - - - -
+* AlternateItemIdentification
+    ItemIdentificationPG
+* AlternateTypeIdentification
+    TypeIdentificationPG
+* Communities
+    CommunityPG
+* ItemIdentification
+    ItemIdentificationPG
+* Local
+    RelationshipPG
+* MessageAddress
+    ClusterPG
+* Nomenclature
+    ItemIdentificationPG
+    TypeIdentificationPG
+* Predictor
+    ClusterPG
+* RelationshipSchedule
+    RelationshipPG
+* Roles
+    EntityPG
+* Schedule
+    LocationSchedulePG
+* TypeIdentification
+    TypeIdentificationPG

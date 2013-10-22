@@ -1,0 +1,41 @@
+ * How to Configure the DeletionPlugin.
+ * 
+ * The DeletionPlugin runs according to a prescribed schedule to find
+ * Deletable objects on the blackboard and delete them if they are ready
+ * to be deleted. These actions are controlled by a
+ * DelectionSchedulePolicy and one or more DeletionPolicy objects on the
+ * blackboard. The DeletionPlugin guarantees that there is always a
+ * DefaultDeletionPolicy present by creating on at startup (or restart)
+ * if there is not one already present.
+ * 
+ * DeletionSchedulePolicy
+ * 
+ * The deletion schedule is characterized primarily by a period (how
+ * often) and a phase (at what time of day). The public interface of the
+ * standard DeletionSchedulePolicy allows all aspects of the schedule to
+ * be altered including adding specific times for deletion to occur. The
+ * current DeletionPlugin implementation insures that exactly one
+ * DeletionSchedulePolicy exists on the blackboard creating one if
+ * necessary and deleting extraneous ones. If an existing policy is
+ * found, it is left as is. Subclasses could choose to insure that the
+ * periodic schedule parameters agree with the values specified as plugin
+ * parameters.
+ * 
+ * DefaultDeletionPolicy
+ * 
+ * The DeletionPlugin also guarantees that there is exactly one default
+ * DeletionPolicy on the blackboard. If there are none, one is created
+ * using plugin parameters. If there are multiples (should never happen),
+ * extras are deleted.
+ * 
+ * DeletionPlugin Parameters
+ * 
+ * The DeletionPlug accepts four named parameters as follows:
+ * deletionDelay=<long default 15 days>
+ * deletionPeriod=<long default 7 days>
+ * deletionPhase=<long 0 (midnight)>
+ * archivingEnabled=<boolean>
+ * 
+ * The archivingEnable parameter causes a persistence snapshot to be
+ * taken for archiving purposes prior to doing deletions.
+
